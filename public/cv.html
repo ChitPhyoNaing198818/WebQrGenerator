@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Will You Be Mine?</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff758f;
+            --accent: #ffb3c1;
+            --glass: rgba(255, 255, 255, 0.85);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Pyidaungsu', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(-45deg, #fff5f6, #ffe3e8, #ffccd5, #fff0f3); background-size: 400% 400%; animation: gradientBG 15s ease infinite; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; padding: 20px; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        #bg-elements { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .floating-heart { position: absolute; color: var(--accent); opacity: 0.3; animation: floatUp var(--duration) linear infinite; filter: blur(1px); }
+        @keyframes floatUp { 0% { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { transform: translateY(-10vh) rotate(360deg) scale(1.5); opacity: 0; } }
+        .card-container { width: 100%; max-width: 420px; z-index: 10; perspective: 1000px; }
+        .card { background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 40px 25px; border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(255, 77, 109, 0.25); text-align: center; border: 1px solid rgba(255, 255, 255, 0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 520px; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); transform-style: preserve-3d; }
+        .meme-container { width: 160px; height: 160px; margin-bottom: 25px; position: relative; }
+        .meme-container::after { content: ''; position: absolute; inset: -10px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 35px; z-index: -1; opacity: 0.2; filter: blur(10px); }
+        .meme-img { width: 100%; height: 100%; object-fit: cover; border-radius: 30px; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .typing-container { height: 120px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; padding: 0 10px; overflow-y: auto; }
+        #love-letter { font-size: 1.2rem; color: #333; font-weight: 700; line-height: 1.6; text-shadow: 0 2px 4px rgba(0,0,0,0.05); white-space: pre-wrap; }
+        .buttons-wrapper { display: flex; flex-direction: row; align-items: center; gap: 15px; width: 100%; min-height: 120px; justify-content: center; position: relative; opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out; }
+        .buttons-wrapper.show { opacity: 1; visibility: visible; }
+        .btn { border-radius: 25px; font-weight: 800; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: none; box-shadow: 0 10px 20px rgba(255, 77, 109, 0.2); display: flex; align-items: center; justify-content: center; white-space: nowrap; outline: none; }
+        .btn:active { transform: scale(0.95); }
+        #yesBtn { padding: 16px 35px; font-size: 19px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; min-width: 150px; z-index: 1000; }
+        #noBtn { padding: 12px 28px; background: white; color: #ff4d6d; border: 1px solid #ffe3e8; font-size: 15px; z-index: 100; }
+        .hidden { display: none !important; }
+        #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 2000; }
+    </style>
+</head>
+<body>
+    <div id="bg-elements"></div>
+    <canvas id="confetti-canvas"></canvas>
+    <div class="card-container">
+        <div class="card" id="mainCard">
+            <div class="meme-container">
+                <img id="memeDisplay" src="https://media.tenor.com/_2zE0P3mPvkAAAAj/two-sleeping-cats.gif" class="meme-img" alt="Cute Cat">
+            </div>
+            <div class="typing-container">
+                <span id="love-letter"></span>
+            </div>
+            <div class="buttons-wrapper" id="btnContainer">
+                <button id="yesBtn" class="btn">ချစ်တယ် ❤️</button>
+                <button id="noBtn" class="btn">ဟင့်အင်း</button>
+            </div>
+        </div>
+        <div class="card hidden" id="successCard">
+            <div class="meme-container">
+                <img src="https://media.tenor.com/0vKzF-CAt4IAAAAj/cute-cat.gif" class="meme-img" alt="Success Cat" id="successMeme">
+            </div>
+            <h1 id="tpl-success-title" style="color: var(--primary); font-size: 2.2rem; margin-bottom: 15px;">I Love You Too Much ❤️</h1>
+            <p id="tpl-success-desc" style="color: #444; line-height: 1.6; font-size: 1.1rem; padding: 0 20px;">
+                ကမ္ဘာပေါ်မှာ အပျော်ဆုံးလူသားက ကိုယ်ပါပဲကွယ်။<br>
+                 အမြဲတမ်း ဂရုစိုက်သွားမှာပါနော်။
+            </p>
+        </div>
+    </div>
+    <script>
+        const cvManifest = {
+            type: 'REGISTER_MANIFEST',
+            schema: [
+                { id: 'startMeme', type: 'image', label: 'အဓိက စပြောမည့် GIF ပုံ', icon: 'fa-solid fa-photo-film', defaultValue: 'https://media.tenor.com/_2zE0P3mPvkAAAAj/two-sleeping-cats.gif' },
+                { id: 'paragraphText', type: 'textarea', label: 'ရင်ဖွင့်လွှာ စာသားများ (Paragraph)', icon: 'fa-solid fa-file-lines', rows: 6, defaultValue: "ဟိုင်း... Crushလေးရေ ❤️\nကိုယ် မင်းကို ပြောစရာရှိတယ်...\nမင်းနဲ့တွေ့ဆုံခွင့်ရတာကလေ ဘ၀မှာအကောင်းဆုံးဆုပါပဲ\nမင်းဘေးနားမှာပဲနေပြီး မင်းကိုကာကွယ်စောက်ရှောက်ပေးချင်ပါတယ်\nမင်းအပေါ်ကျမဲ့ ကံဆိုးခြင်းတွေကို ကိုယ့်အပေါ်ပဲကျစေချင်တယ်\nကိုယ့်အပေါ်ကျမဲ့ ကံကောင်းခြင်းတွေကို မင်းအပေါ်ကိုပဲကျစေချင်ပါတယ်\nကိုယ် မင်းကို ကိုယ့်အသက်လောက်ချစ်တယ်\nမင်းရောကိုယ့်ကို ပြန်ချစ်နိုင်မလား" },
+                { id: 'yesBtnText', type: 'text', label: 'Yes ခလုတ်စာသား', icon: 'fa-solid fa-heart', defaultValue: 'ချစ်တယ် ❤️' },
+                { id: 'noBtnText', type: 'text', label: 'No ခလုတ်စာသား', icon: 'fa-solid fa-xmark', defaultValue: 'ဟင့်အင်း' },
+                { id: 'successTitle', type: 'text', label: 'အောင်မြင်သွားချိန် ခေါင်းစဉ်', icon: 'fa-solid fa-star', defaultValue: 'I Love You Too Much ❤️' },
+                { id: 'successDesc', type: 'textarea', label: 'အောင်မြင်သွားချိန် စာသားထည့်ရန်', icon: 'fa-solid fa-quote-left', rows: 3, defaultValue: 'ကမ္ဘာပေါ်မှာ အပျော်ဆုံးလူသားက ကိုယ်ပါပဲကွယ်။\nအမြဲတမ်း ဂရုစိုက်သွားမှာပါနော်।' },
+                { id: 'successMemeImg', type: 'image', label: 'အောင်မြင်သွားချိန် ပြသမည့် GIF ပုံ', icon: 'fa-solid fa-image', defaultValue: 'https://media.tenor.com/0vKzF-CAt4IAAAAj/cute-cat.gif' }
+            ]
+        };
+        window.parent.postMessage(cvManifest, '*');
+        const loveLetterElement = document.getElementById('love-letter');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const btnContainer = document.getElementById('btnContainer');
+        const mainCard = document.getElementById('mainCard');
+        const successCard = document.getElementById('successCard');
+        const memeDisplay = document.getElementById('memeDisplay');
+        const bgContainer = document.getElementById('bg-elements');
+        let messages = cvManifest.schema.find(s => s.id === 'paragraphText').defaultValue.split('\n');
+        const noPhrases = ["ဟင့်အင်း", "သေချာလို့လား? 🥺", "ထပ်စဉ်းစားပါဦး", "တကယ်ကြီးလား?", "မှားနှိပ်တာလား?", "တစ်ခါလောက်ပဲ", "မနှိပ်ပါနဲ့နော်", "စိတ်မကောင်းဖြစ်သွားပြီ", "Yes ကိုပဲနှိပ်ပါ"];
+        const backupNoMemes = ["https://media.tenor.com/YUzRkMOL-3EAAAAj/cat-sad-eyes.gif", "https://media.tenor.com/3xQ7kG9r2WMAAAAj/cat-please.gif", "https://media.tenor.com/j5kFJxXKXJ0AAAAj/cat-beg.gif", "https://media.tenor.com/l1DkK8Z6z7AAAAAj/cat-crying-hard.gif"];
+        let noCount = 0; let msgIndex = 0; let charIndex = 0; let isDeleting = false; let tTimeout;
+        function type() {
+            const currentMsg = messages[msgIndex];
+            if (isDeleting) { loveLetterElement.textContent = currentMsg.substring(0, charIndex - 1); charIndex--; }
+            else { loveLetterElement.textContent = currentMsg.substring(0, charIndex + 1); charIndex++; }
+            let typeSpeed = isDeleting ? 20 : 40;
+            if (!isDeleting && charIndex === currentMsg.length) {
+                if (msgIndex === messages.length - 1) { btnContainer.classList.add('show'); return; }
+                isDeleting = true; typeSpeed = 1500;
+            } else if (isDeleting && charIndex === 0) { isDeleting = false; msgIndex++; typeSpeed = 1000; }
+            tTimeout = setTimeout(type, typeSpeed);
+        }
+        function applyStateUpdate(data) {
+            if (data.startMeme) memeDisplay.src = data.startMeme;
+            if (data.paragraphText) {
+                clearTimeout(tTimeout);
+                messages = data.paragraphText.split('\n').filter(line => line.trim() !== "");
+                msgIndex = 0; charIndex = 0; isDeleting = false; loveLetterElement.textContent = "";
+                btnContainer.classList.remove('show'); type();
+            }
+            if (data.yesBtnText) yesBtn.innerText = data.yesBtnText;
+            if (data.noBtnText) noBtn.innerText = data.noBtnText;
+            if (data.successTitle) document.getElementById('tpl-success-title').innerText = data.successTitle;
+            if (data.successDesc) document.getElementById('tpl-success-desc').innerHTML = data.successDesc.replace(/\n/g, '<br>');
+            if (data.successMemeImg) document.getElementById('successMeme').src = data.successMemeImg;
+        }
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'UPDATE_DATA') applyStateUpdate(event.data.payload);
+            if (event.data && event.data.type === 'REQUEST_SNAPSHOT') window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+        });
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('id')) {
+            fetch(`/api/card/${urlParams.get('id')}`)
+                .then(res => res.json())
+                .then(data => applyStateUpdate(data))
+                .catch(err => console.error("Failed to fetch card data:", err));
+        } else if (urlParams.has('studio_payload')) {
+            try {
+                const base64 = decodeURIComponent(urlParams.get('studio_payload'));
+                const binaryString = atob(base64);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+                const decodedString = new TextDecoder().decode(bytes);
+                const data = JSON.parse(decodedString);
+                applyStateUpdate(data);
+            } catch(e) { console.error("Payload decoding failed", e); }
+        }
+        noBtn.addEventListener('click', () => {
+            noCount++; noBtn.textContent = noPhrases[Math.min(noCount, noPhrases.length - 1)];
+            memeDisplay.src = backupNoMemes[noCount % backupNoMemes.length];
+            yesBtn.style.transform = `scale(${1 + (noCount * 0.45)})`;
+            noBtn.style.transform = `scale(${Math.max(0.4, 1 - (noCount * 0.08))})`;
+        });
+        yesBtn.addEventListener('click', () => {
+            mainCard.classList.add('hidden'); successCard.classList.remove('hidden'); btnContainer.classList.add('hidden');
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        });
+        window.onload = () => { type(); };
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Web & QR Surprise Cards Studio",
+  "description": "Create beautiful interactive digital surprise greeting pages and custom QR codes with music, custom messages and themes for weddings, confessions, birthdays and anniversaries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

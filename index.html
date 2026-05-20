@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <title>Web&Qr Generator v1.0 (Backend Edition)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: { 
+                    colors: { slate: { 950: '#0b0f19' } },
+                    animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght=600;700&family=Playfair+Display:ital,wght=1,500;1,700&family=Montserrat:wght=500;700;800&family=Inter:wght=400;600;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        .panel-transition { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .preview-mobile {
+            position: relative;
+            width: 264px !important;  
+            height: 528px !important;   
+            background: #000000;
+            border: 12px solid #111827;
+            border-radius: 44px;
+            box-shadow: 
+                0 0 0 2px #374151,
+                0 25px 50px -10px rgba(0,0,0,0.5),
+                inset 0 0 8px rgba(0,0,0,0.5);
+            overflow: hidden !important;
+            animation: phonePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .preview-mobile.tutorial-mode {
+            width: 216px !important;
+            height: 432px !important;
+            border-width: 10px !important;
+            border-radius: 34px !important;
+        }
+        .preview-mobile.tutorial-mode::before {
+            width: 64px !important;
+            height: 14px !important;
+            top: 5px !important;
+            border-radius: 8px !important;
+        }
+        .preview-mobile.tutorial-mode::after {
+            width: 50px !important;
+            height: 3px !important;
+            bottom: 4px !important;
+        }
+        .preview-mobile.tutorial-mode iframe {
+            width: 375px !important;
+            height: 786px !important;
+            transform: scale(0.5226) !important;
+            transform-origin: top left !important;
+        }
+        .preview-mobile::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 20px;
+            background: #000000;
+            border-radius: 12px;
+            z-index: 50;
+            transition: all 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            pointer-events: none;
+        }
+        .preview-mobile::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            z-index: 50;
+            pointer-events: none;
+        }
+        .preview-tablet {
+            position: relative;
+            width: 440px !important;  
+            height: 600px !important;   
+            background: #ffffff;
+            border: 14px solid #1e293b;
+            border-radius: 36px;
+            box-shadow: 
+                0 0 0 2px #475569,
+                0 25px 50px -12px rgba(0,0,0,0.4);
+            overflow: hidden !important;
+            animation: phonePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .preview-tablet::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            background: #000000;
+            border-radius: 50%;
+            z-index: 50;
+        }
+        .preview-tablet::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            z-index: 50;
+            pointer-events: none;
+        }
+        .preview-desktop {
+            position: relative;
+            width: 100% !important;  
+            height: 100% !important;   
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            overflow: hidden !important;
+            animation: phonePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .dark .preview-desktop {
+            border-color: #1e293b;
+            background: #0b0f19;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Custom sleek scrollbar styling for interactive scroll panels */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.25);
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.45);
+        }
+        @media (max-width: 639px) {
+            .preview-mobile {
+                width: 240px !important;
+                height: 480px !important;
+                border-width: 10px !important;
+                border-radius: 36px !important;
+                box-shadow: 
+                    0 0 0 1px #374151,
+                    0 15px 30px -8px rgba(0,0,0,0.4);
+            }
+            .preview-mobile::before {
+                width: 70px !important;
+                height: 18px !important;
+                top: 6px !important;
+            }
+            .preview-mobile::after {
+                width: 60px !important;
+                height: 3px !important;
+                bottom: 5px !important;
+            }
+            .preview-mobile iframe {
+                width: 375px !important;
+                height: 780px !important;
+                transform: scale(0.5866) !important;
+                transform-origin: top left !important;
+            }
+        }
+        .mobile-flex-stack { display: flex !important; flex-direction: column !important; gap: 1.25rem !important; }
+        .preview-mobile iframe {
+            width: 375px !important;
+            height: 786px !important;
+            transform: scale(0.64);
+            transform-origin: top left;
+            border: none;
+            overflow-y: auto !important;
+        }
+        .preview-mobile iframe::-webkit-scrollbar { display: none !important; }
+        .preview-mobile iframe { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        @keyframes phonePop {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes eqBounce {
+            0%, 100% { height: 4px; }
+            50% { height: 15px; }
+        }
+        .eq-bar-1 { animation: eqBounce 0.8s ease-in-out infinite; }
+        .eq-bar-2 { animation: eqBounce 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite; }
+        .eq-bar-3 { animation: eqBounce 0.6s ease-in-out infinite; }
+        .eq-bar-4 { animation: eqBounce 1.0s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .eq-bar-5 { animation: eqBounce 1.4s ease-in-out infinite; }
+        
+        /* Landing Mode styling states */
+        body.landing-active nav {
+            display: none !important;
+        }
+        body.landing-active .lg\:hidden {
+            display: none !important;
+        }
+        body.landing-active aside {
+            display: none !important;
+        }
+        body.landing-active #modificationControlPanel {
+            display: none !important;
+        }
+        body.landing-active #mobileTabsDock {
+            display: none !important;
+        }
+        body.landing-active .max-w-\[1600px\] {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            gap: 0 !important;
+        }
+        body.landing-active #previewColumn {
+            grid-column: span 12 / span 12 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            z-index: 50 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        body.landing-active #previewContainer {
+            width: 100% !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+        }
+        body.landing-active #previewViewport {
+            width: 100% !important;
+            height: 100% !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }
+        body.landing-active #iphoneFrame {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            animation: none !important;
+        }
+        body.landing-active #iphoneFrame::before,
+        body.landing-active #iphoneFrame::after {
+            display: none !important;
+        }
+        body.landing-active #previewIframe {
+            width: 100% !important;
+            height: 100% !important;
+            transform: none !important;
+            border-radius: 0 !important;
+        }
+    </style>
+</head>
+<body class="landing-active bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-300 overflow-x-hidden">
+    <nav class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-2 sticky top-0 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 font-sans">
+        <div class="flex items-center space-x-2">
+            <div class="bg-gradient-to-r from-indigo-500 to-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm shadow-indigo-500/10">
+                <i class="fa-solid fa-cubes text-xs"></i>
+            </div>
+            <span class="text-sm font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">Web&Qr Generator</span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="toggleLang()" aria-label="Toggle language" class="flex items-center justify-center px-2.5 h-8 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/50 dark:border-slate-700/50 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all select-none active:scale-95 text-[9px] font-black tracking-wider uppercase">
+                <span class="lang-label font-sans">EN</span>
+            </button>
+            <button onclick="toggleTheme()" aria-label="Toggle theme" class="flex items-center justify-center w-8 h-8 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/50 dark:border-slate-700/50 transition-all select-none active:scale-95">
+                <i class="fa-solid fa-sun dark:hidden text-[10px]"></i>
+                <i class="fa-solid fa-moon hidden dark:block text-[10px]"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Panel with Scrollable categories -->
+    <div class="lg:hidden bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md sticky top-[49px] z-30 px-3 py-2">
+        <div id="mobile-categories-scroll" class="flex overflow-x-auto no-scrollbar gap-1.5 pb-1 select-none">
+            <button id="mobile-btn-index" onclick="switchTemplateFile('lovecard.html', 'btn-index')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-500/15 text-pink-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-500/15 text-pink-500 text-[10px]"><i class="fa-solid fa-envelope"></i></span>
+                <span>Love Card</span>
+            </button>
+            <button id="mobile-btn-cv" onclick="switchTemplateFile('cv.html', 'btn-cv')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-rose-500/15 text-rose-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-rose-500/15 text-rose-500 text-[10px]"><i class="fa-solid fa-heart"></i></span>
+                <span>Will You Be Mine</span>
+            </button>
+            <button id="mobile-btn-blog" onclick="switchTemplateFile('blog.html', 'btn-blog')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-amber-500/15 text-amber-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-amber-500/15 text-amber-500 text-[10px]"><i class="fa-solid fa-gift"></i></span>
+                <span>Surprise Blog</span>
+            </button>
+            <button id="mobile-btn-christmas" onclick="switchTemplateFile('christmas.html', 'btn-christmas')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-500 text-[10px]"><i class="fa-solid fa-tree"></i></span>
+                <span>Christmas</span>
+            </button>
+            <button id="mobile-btn-anniversary" onclick="switchTemplateFile('anniversary.html', 'btn-anniversary')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-purple-500/15 text-purple-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-purple-500/15 text-purple-500 text-[10px]"><i class="fa-solid fa-ring"></i></span>
+                <span>Anniversary</span>
+            </button>
+            <button id="mobile-btn-birthday" onclick="switchTemplateFile('birthday.html', 'btn-birthday')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-yellow-500/15 text-yellow-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-yellow-500/15 text-yellow-500 text-[10px]"><i class="fa-solid fa-cake-candles"></i></span>
+                <span>Birthday</span>
+            </button>
+            <button id="mobile-btn-mother" onclick="switchTemplateFile('mother.html', 'btn-mother')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-400/15 text-pink-400 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-400/15 text-pink-400 text-[10px]"><i class="fa-solid fa-person-breastfeeding"></i></span>
+                <span>Mother Day</span>
+            </button>
+            <button id="mobile-btn-father" onclick="switchTemplateFile('father.html', 'btn-father')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-750 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-600/15 text-blue-600 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-600/15 text-blue-600 text-[10px]"><i class="fa-solid fa-user-tie"></i></span>
+                <span>Father Day</span>
+            </button>
+            <button id="mobile-btn-friend" onclick="switchTemplateFile('friend.html', 'btn-friend')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-750 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+                <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-sky-500/15 text-sky-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-sky-500/15 text-sky-500 text-[10px]"><i class="fa-solid fa-user-group"></i></span>
+                <span>Friendship</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="flex-1 max-w-[1600px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-2">
+        <aside class="hidden lg:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 rounded-2xl lg:col-span-2 lg:order-3 space-y-3.5 lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px] overflow-y-auto">
+            <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-400/80 mb-2.5 flex items-center gap-1.5 justify-center">Active Layouts</h2>
+            <div class="space-y-2 font-sans" id="desktopTemplateList">
+                <div id="btn-index" onclick="switchTemplateFile('lovecard.html', 'btn-index')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-pink-500/10 dark:bg-pink-500/20 text-pink-500 dark:text-pink-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-envelope text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-pink-500"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors truncate">Love Card</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-cv" onclick="switchTemplateFile('cv.html', 'btn-cv')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-rose-500/10 dark:bg-rose-500/20 text-rose-500 dark:text-rose-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-heart text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors truncate">Will You Be Mine</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-blog" onclick="switchTemplateFile('blog.html', 'btn-blog')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 text-amber-500 dark:text-amber-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-gift text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors truncate">Surprise Blog</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-christmas" onclick="switchTemplateFile('christmas.html', 'btn-christmas')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-tree text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">Christmas</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-anniversary" onclick="switchTemplateFile('anniversary.html', 'btn-anniversary')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-purple-500/10 dark:bg-purple-500/20 text-purple-500 dark:text-purple-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-ring text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-purple-500"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">Anniversary</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-birthday" onclick="switchTemplateFile('birthday.html', 'btn-birthday')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-cake-candles text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-yellow-500"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors truncate">Birthday</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-mother" onclick="switchTemplateFile('mother.html', 'btn-mother')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-pink-400/10 dark:bg-pink-400/20 text-pink-500 dark:text-pink-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-person-breastfeeding text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-300 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-pink-400"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors truncate">Mother Day</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-father" onclick="switchTemplateFile('father.html', 'btn-father')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600/10 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-user-tie text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-600"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">Father Day</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+                <div id="btn-friend" onclick="switchTemplateFile('friend.html', 'btn-friend')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
+                    <div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-sky-500/10 dark:bg-sky-500/20 text-sky-500 dark:text-sky-400 group-hover:scale-105 transition-all duration-300">
+                        <i class="fa-solid fa-user-group text-xs"></i>
+                        <span class="active-dot hidden absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-sky-500"></span>
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[11px] font-bold text-slate-700 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors truncate">Friendship</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+                </div>
+            </div>
+        </aside>
+        <main id="previewColumn" class="col-span-1 lg:col-span-7 lg:order-1 flex flex-col items-center w-full lg:sticky lg:top-[100px] lg:self-start transition-all duration-300">
+            <div id="previewContainer" class="w-full border-0 bg-transparent shadow-none flex flex-col h-[520px] sm:h-[580px] lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px] relative transition-all duration-500">
+                <div id="previewHeaderBar" class="hidden bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 items-center justify-between z-10 select-none">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500" id="live-preview-title">Live Preview</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="openIframeInNewTab()" title="Open preview in new tab" aria-label="Open in new window" class="w-7 h-7 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 border border-slate-200/50 dark:border-slate-700/50 rounded-lg select-none active:scale-95 transition-all">
+                            <i class="fa-solid fa-up-right-from-square text-[9px]"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="previewViewport" class="flex-1 bg-transparent p-3 sm:p-4 lg:p-6 flex items-center justify-center overflow-hidden relative min-h-0 transition-all duration-500">
+                    <button id="floatingOpenTabBtn" onclick="openIframeInNewTab()" title="Open preview in new tab" aria-label="Open in new window" class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-slate-900/95 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 border border-slate-200/60 dark:border-slate-800/60 rounded-full shadow-md backdrop-blur-md select-none active:scale-95 transition-all opacity-0 pointer-events-none">
+                        <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
+                    </button>
+                    <div class="preview-mobile tutorial-mode transition-all duration-300 ease-out" id="iphoneFrame">
+                        <iframe id="previewIframe" src="example.html"></iframe>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <section id="modificationControlPanel" class="col-span-1 lg:col-span-3 lg:order-2 w-full transition-all duration-500">
+            <div id="controlPanelPlaceholder" class="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-6 h-[380px] sm:h-[480px] lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px] flex flex-col items-center justify-center text-center space-y-4 shadow-[0_12px_45px_rgba(99,102,241,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 transform">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 animate-bounce shadow-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                </div>
+                <div class="space-y-2 max-w-[200px] pointer-events-none">
+                    <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-widest" id="welcome-header">Design Awaits!</h3>
+                    <p class="text-[11px] leading-relaxed text-slate-400 dark:text-slate-500" id="welcome-desc">Choose a pre-designed layout from the sidebar to activate the interactive design customizer.</p>
+                </div>
+                <div class="pt-4 border-t border-slate-200/40 dark:border-slate-800/60 w-full max-w-[150px] flex items-center justify-center gap-1.5 text-[9px] text-slate-400 dark:text-slate-500 italic font-semibold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Dual localization
+                </div>
+            </div>
+
+            <!-- Dynamic Studio UI -->
+            <div id="controlPanelContent" class="hidden opacity-0 scale-95 transition-all duration-300 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-250 dark:border-slate-800/80 shadow-[0_25px_60px_-15px_rgba(99,102,241,0.08)] dark:shadow-[0_40px_80px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col justify-between h-[440px] sm:h-[500px] lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px]">
+                <div class="flex-1 flex flex-col min-h-0">
+                    <div class="bg-gradient-to-r from-indigo-500/10 to-blue-500/10 px-4 py-3 border-b border-slate-200/40 dark:border-slate-800/60 flex items-center justify-between">
+                        <span id="customizeStudioTitle" class="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Customize Studio
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <div id="db-connection-badge" class="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-slate-100 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 text-slate-400 select-none">
+                                <span class="w-1 h-1 rounded-full bg-slate-400"></span> Checking DB...
+                            </div>
+                            <div id="cloudinary-connection-badge" class="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-slate-100 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 text-slate-400 select-none">
+                                <span class="w-1 h-1 rounded-full bg-slate-400"></span> Checking Media...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-1 px-1.5 bg-slate-100/60 dark:bg-slate-950/40 rounded-2xl flex gap-1.5 mx-4 my-3.5 border border-slate-200/20 dark:border-slate-800/40 backdrop-blur-md">
+                        <button onclick="switchStudioTab('content')" id="tabBtn-content" class="flex-1 py-2.5 rounded-xl text-center text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 shadow-[0_4px_12px_rgba(99,102,241,0.08)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-800/60 focus:outline-none transition-all duration-300">
+                            <i class="fa-solid fa-file-pen mr-1"></i> <span id="tabLabel-content">Content</span>
+                        </button>
+                        <button onclick="switchStudioTab('magic')" id="tabBtn-magic" class="flex-1 py-2.5 rounded-xl text-center text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-all duration-300">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> <span id="tabLabel-magic">Magic Effects</span>
+                        </button>
+                    </div>
+
+                    <div class="p-4 flex-1 overflow-y-auto min-h-0 space-y-4 no-scrollbar">
+                        <div id="tabPanel-content" class="space-y-4">
+                            <div id="dynamicFormContainer" class="space-y-4"></div>
+                        </div>
+
+                        <div id="tabPanel-magic" class="hidden space-y-5 animate-in fade-in duration-200">
+                            <div class="space-y-2">
+                                <label id="moodPresetsTitle" class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fa-solid fa-palette text-indigo-500"></i> One-Click Mood Presets
+                                </label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="applyMoodPreset('romantic')" class="preset-btn group relative p-2.5 text-left border border-slate-200 dark:border-slate-800 hover:border-pink-500 dark:hover:border-pink-500 bg-slate-50/20 dark:bg-slate-900/20 hover:bg-pink-500/5 dark:hover:bg-pink-500/5 rounded-xl transition-all font-sans">
+                                        <span class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-pink-600" id="preset-romantic">Romantic Pink</span>
+                                        <div class="flex gap-1 mt-1.5">
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#fff0f3"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#590d22"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#ff758f"></span>
+                                        </div>
+                                    </button>
+                                    <button onclick="applyMoodPreset('gold')" class="preset-btn group relative p-2.5 text-left border border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 bg-slate-50/20 dark:bg-slate-900/20 hover:bg-amber-500/5 dark:hover:bg-amber-500/5 rounded-xl transition-all font-sans">
+                                        <span class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-amber-500" id="preset-gold">Midnight Gold</span>
+                                        <div class="flex gap-1 mt-1.5">
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#0b0f19"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#fef3c7"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#d97706"></span>
+                                        </div>
+                                    </button>
+                                    <button onclick="applyMoodPreset('forest')" class="preset-btn group relative p-2.5 text-left border border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 bg-slate-50/20 dark:bg-slate-900/20 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/5 rounded-xl transition-all font-sans">
+                                        <span class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-emerald-500" id="preset-forest">Forest Fresh</span>
+                                        <div class="flex gap-1 mt-1.5">
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#f0fdf4"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#14532d"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#16a34a"></span>
+                                        </div>
+                                    </button>
+                                    <button onclick="applyMoodPreset('sunset')" class="preset-btn group relative p-2.5 text-left border border-slate-200 dark:border-slate-800 hover:border-orange-500 dark:hover:border-orange-500 bg-slate-50/20 dark:bg-slate-900/20 hover:bg-orange-500/5 dark:hover:bg-orange-500/5 rounded-xl transition-all font-sans">
+                                        <span class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-orange-500" id="preset-sunset">Sunset Warmth</span>
+                                        <div class="flex gap-1 mt-1.5">
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#fff7ed"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#7c2d12"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#ea580c"></span>
+                                        </div>
+                                    </button>
+                                    <button onclick="applyMoodPreset('lavender')" class="col-span-2 preset-btn group relative p-2.5 text-left border border-slate-200 dark:border-slate-800 hover:border-purple-500 dark:hover:border-purple-500 bg-slate-50/20 dark:bg-slate-900/20 hover:bg-purple-500/5 dark:hover:bg-purple-500/5 rounded-xl transition-all font-sans">
+                                        <span class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-purple-500" id="preset-lavender">Cosmic Lavender</span>
+                                        <div class="flex gap-1 mt-1.5">
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#faf5ff"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#581c87"></span>
+                                            <span class="w-3.5 h-3.5 rounded-full border border-white dark:border-slate-800" style="background:#9333ea"></span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label id="preloadedTracksTitle" class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fa-solid fa-headphones text-indigo-500"></i> Preloaded Soundtracks
+                                </label>
+                                <div class="flex items-center gap-3">
+                                    <select id="preloadedTracksSelect" onchange="applyPreloadedTrack(this.value)" class="flex-1 p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-sans">
+                                        <option value="" id="track-choose">Choose static track...</option>
+                                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" id="track-guitar">Romantic Guitar</option>
+                                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" id="track-piano">Sweet Piano</option>
+                                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" id="track-lofi">Chill Lofi Beat</option>
+                                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" id="track-doc">Dreamy Waltz</option>
+                                        <option value="https://assets.mixkit.co/active_storage/sfx/123/123.wav" id="track-bday">Happy Birthday Music</option>
+                                    </select>
+                                    <button id="previewTrackPlayBtn" onclick="toggleLocalTrackPlayer()" class="w-9 h-9 shrink-0 flex items-center justify-center bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/30 border border-indigo-200/30 dark:border-indigo-800/20 text-indigo-600 dark:text-indigo-400 rounded-xl active:scale-95 transition-all select-none">
+                                        <i class="fa-solid fa-play text-xs"></i>
+                                    </button>
+                                </div>
+                                
+                                <div id="waveVisualizer" class="hidden h-5 items-center justify-center gap-1 py-1 bg-indigo-50/10 dark:bg-indigo-950/10 border border-indigo-100/30 dark:border-indigo-900/20 rounded-lg overflow-hidden transition-all duration-300">
+                                    <div class="flex items-center gap-[2.5px] h-3">
+                                        <span class="w-[2px] bg-indigo-500 dark:bg-indigo-400 rounded-full eq-bar-1 h-1.5"></span>
+                                        <span class="w-[2px] bg-indigo-500 dark:bg-indigo-400 rounded-full eq-bar-2 h-2"></span>
+                                        <span class="w-[2px] bg-indigo-500 dark:bg-indigo-400 rounded-full eq-bar-3 h-1"></span>
+                                        <span class="w-[2px] bg-indigo-500 dark:bg-indigo-400 rounded-full eq-bar-4 h-2.5"></span>
+                                        <span class="w-[2px] bg-indigo-500 dark:bg-indigo-400 rounded-full eq-bar-5 h-1.5"></span>
+                                    </div>
+                                    <span class="text-[8px] font-bold text-indigo-600 dark:text-indigo-400 ml-1.5 select-none uppercase tracking-widest font-sans" id="visualizer-text">Audio Live Preview</span>
+                                </div>
+
+                                <audio id="localDemoPlayer" loop class="hidden"></audio>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label id="particlesTitleLabel" class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i> Floating Particles Customizer
+                                </label>
+                                <select onchange="applyParticleCustomizer(this.value)" class="w-full p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-sans">
+                                    <option value="" id="particle-choose">Select floating symbol...</option>
+                                    <option value="❤️" id="particle-hearts">❤️ Hearts</option>
+                                    <option value="✨" id="particle-sparkles">✨ Sparkles</option>
+                                    <option value="🌸" id="particle-sakura">🌸 Cherry Blossom</option>
+                                    <option value="❄️" id="particle-snow">❄️ Snowflakes</option>
+                                    <option value="🎈" id="particle-balloons">🎈 Balloons</option>
+                                    <option value="⭐" id="particle-stars">⭐ Golden Stars</option>
+                                    <option value="🍀" id="particle-clover">🍀 Clover Leaf</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-slate-150/40 dark:border-slate-800/60 bg-white/40 dark:bg-slate-950/30 backdrop-blur-md">
+                    <button id="deployBtn" onclick="generateVercelNativeRouteLink()" class="w-full relative group overflow-hidden bg-slate-950 dark:bg-indigo-600 text-white font-extrabold py-3 px-5 rounded-xl transition-all active:scale-95 text-[9px] uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-indigo-600/10 dark:shadow-indigo-600/20 hover:shadow-indigo-600/25 active:shadow-none animate-in fade-in slide-in-from-bottom-2 duration-300 font-sans">
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <i class="fa-solid fa-wand-magic-sparkles relative z-10 animate-pulse text-[10px]"></i>
+                        <span class="relative z-10 font-sans" id="btn-text-generate">Web & QR Generate</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Mobile Screen Preview / Editor Sticky Dock -->
+    <div id="mobileTabsDock" class="hidden lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 rounded-full shadow-[0_15px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_45px_rgba(0,0,0,0.4)] px-1.5 py-1 flex gap-1 backdrop-blur-xl items-center pointer-events-auto transition-all animate-in slide-in-from-bottom-5 duration-300">
+        <button onclick="setMobileTab('editor')" id="mobileTabBtn-editor" class="px-3.5 py-1.5 rounded-full text-[11px] font-sans font-bold transition-all duration-300 flex items-center gap-1.5 bg-indigo-600 text-white shadow-md shadow-indigo-500/15 active:scale-95">
+            <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+            <span class="mobile-tab-text-editor font-sans">Editor</span>
+        </button>
+        <div class="h-4 w-[1px] bg-slate-200 dark:bg-slate-800"></div>
+        <button onclick="setMobileTab('preview')" id="mobileTabBtn-preview" class="px-3.5 py-1.5 rounded-full text-[11px] font-sans text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 transition-all duration-300 flex items-center gap-1.5 active:scale-95">
+            <i class="fa-solid fa-mobile-screen text-[10px]"></i>
+            <span class="mobile-tab-text-preview font-sans font-bold">Live Preview</span>
+        </button>
+    </div>
+
+    <div id="qrModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex items-center justify-center p-2 md:p-4 font-sans">
+        <div class="bg-white dark:bg-slate-900 rounded-[1.5rem] md:rounded-[2.5rem] w-full max-w-4xl h-[92vh] md:h-[85vh] md:max-h-[800px] overflow-hidden flex flex-col md:grid md:grid-cols-2 gap-0 shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-300">
+            <div class="flex border-b border-slate-200 dark:border-slate-800 md:hidden shrink-0 bg-slate-50 dark:bg-slate-950">
+                <button onclick="setQRModalMobileTab('preview')" id="qrModalTabBtn-preview" class="flex-1 py-3 text-[11px] font-black border-b-2 border-indigo-500 text-indigo-600 dark:text-indigo-400 font-sans transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900">
+                    <i class="fa-solid fa-eye text-[11px]"></i> Preview QR / Poster
+                </button>
+                <button onclick="setQRModalMobileTab('customize')" id="qrModalTabBtn-customize" class="flex-1 py-3 text-[11px] font-bold border-b-2 border-transparent text-slate-500 dark:text-slate-400 font-sans transition-all flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-950/20">
+                    <i class="fa-solid fa-pen-to-square text-[11px]"></i> Customize Style
+                </button>
+            </div>
+
+            <div id="qrModalLeftPanel" class="flex-1 overflow-y-auto flex flex-col items-center justify-center space-y-4 md:space-y-5 p-4 md:p-8 bg-slate-50/50 dark:bg-slate-800/30 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 md:!flex">
+                <div class="flex p-1.5 bg-slate-200/50 dark:bg-slate-950/40 rounded-xl w-full max-w-[280px]">
+                    <button onclick="setQRMode('classic')" id="qrModeClassicBtn" class="flex-1 py-1.5 rounded-lg text-[10.5px] font-black transition-all bg-white dark:bg-slate-800 shadow-sm text-indigo-650 dark:text-indigo-400">
+                        <i class="fa-solid fa-qrcode mr-1"></i> Classic QR
+                    </button>
+                    <button onclick="setQRMode('poster')" id="qrModePosterBtn" class="flex-1 py-1.5 rounded-lg text-[10.5px] font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+                        <i class="fa-solid fa-heart mr-1 text-rose-500"></i> Heart Poster
+                    </button>
+                </div>
+
+                <div id="qrcodeCanvasContainer" class="block transition-all duration-300">
+                    <div id="qrcodeCanvas" class="p-2.5 bg-white rounded-2xl shadow-xl border-4 border-indigo-500/10 transition-all"></div>
+                </div>
+
+                <div id="qrPosterPreviewContainer" class="hidden relative w-full max-w-[280px] h-[360px] bg-white rounded-2xl shadow-2xl p-1 border border-slate-200 dark:border-slate-800/80 transition-all duration-300 flex items-center justify-center overflow-hidden">
+                    <canvas id="qrPosterCanvas" class="w-full h-full object-contain"></canvas>
+                </div>
+                
+                <div class="flex flex-col w-full space-y-2 md:space-y-3 max-w-[280px]">
+                    <input type="text" id="generatedLinkInput" readonly class="w-full p-2 bg-white dark:bg-slate-950 rounded-lg text-center text-[8px] md:text-[9px] font-mono text-slate-500 border border-slate-200 dark:border-slate-800 focus:outline-none">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('generatedLinkInput').value);alert('URL Copied!')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 md:py-3 rounded-xl text-[10px] transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 font-sans"><i class="fa-solid fa-copy"></i> Copy</button>
+                        <button id="qrSaveBtn" onclick="onQRSaveClick()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 md:py-3 rounded-xl text-[10px] transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 font-sans"><i class="fa-solid fa-download"></i> Save</button>
+                    </div>
+                    <button onclick="document.getElementById('qrModal').classList.add('hidden')" class="w-full bg-slate-200 dark:bg-slate-800 py-2.5 md:py-3 rounded-xl text-[10px] transition-all hover:bg-slate-300 dark:hover:bg-slate-700 font-bold font-sans">Close Editor</button>
+                </div>
+            </div>
+            
+            <div id="qrModalRightPanel" class="flex-1 hidden md:flex flex-col space-y-4 md:space-y-6 overflow-y-auto p-5 md:p-10 pb-10">
+                <div class="sticky top-0 bg-white dark:bg-slate-900 pb-4 z-10 border-b border-slate-100 dark:border-slate-800 mb-4">
+                    <h3 class="text-xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                        <span class="bg-indigo-600 text-white w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                            <i class="fa-solid fa-palette text-sm md:text-lg"></i>
+                        </span>
+                        QR Stylist
+                    </h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div id="qrClassicSettingsArea" class="space-y-6 block">
+                        <div class="space-y-3">
+                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Dots Style</label>
+                            <div class="grid grid-cols-3 gap-2" id="qrDotsTypeSelector">
+                                <button onclick="applyQRDotsType('square', this)" class="p-2 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-80y0/40 text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-colors">Square</button>
+                                <button onclick="applyQRDotsType('dots', this)" class="p-2 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-colors">Dots</button>
+                                <button onclick="applyQRDotsType('rounded', this)" class="p-2 border border-slate-200 dark:border-slate-805 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-colors">Rounded</button>
+                                <button onclick="applyQRDotsType('extra-rounded', this)" class="p-2 border-2 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl text-[10px] font-black text-indigo-600 dark:text-indigo-400">Extra Rd</button>
+                                <button onclick="applyQRDotsType('classy', this)" class="p-2 border border-slate-200 dark:border-slate-808 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-colors">Classy</button>
+                                <button onclick="applyQRDotsType('classy-rounded', this)" class="p-2 border border-slate-200 dark:border-slate-808 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-colors">C-Round</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Outer Frame</label>
+                                <select onchange="updateQRDesign('cornersSquareOptions.type', this.value)" class="w-full p-2.5 bg-slate-50 dark:bg-slate-150 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-bold outline-none focus:ring-2 ring-indigo-500 transition-shadow font-sans">
+                                    <option value="square">Classic</option>
+                                    <option value="dot">Soft Dot</option>
+                                    <option value="extra-rounded" selected>Extra Smooth</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Inner Core</label>
+                                <select onchange="updateQRDesign('cornersDotOptions.type', this.value)" class="w-full p-2.5 bg-slate-50 dark:bg-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-bold outline-none focus:ring-2 ring-indigo-500 transition-shadow font-sans">
+                                    <option value="square">Box</option>
+                                    <option value="dot" selected>Circle</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 block font-sans">Brand Color</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="color" value="#4f46e5" id="qrBrandColorPicker" oninput="updateQRDesign('dotsOptions.color', this.value); updateQRDesign('cornersSquareOptions.color', this.value); updateQRDesign('cornersDotOptions.color', this.value)" class="w-9 h-9 rounded-lg cursor-pointer border-0 bg-transparent shrink-0">
+                                        <span class="text-[9px] font-bold text-slate-500 font-sans">Theme</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 block font-sans">Canvas Bg</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="color" value="#ffffff" id="qrBgColorPicker" oninput="updateQRDesign('backgroundOptions.color', this.value)" class="w-9 h-9 rounded-lg cursor-pointer border-0 bg-transparent shrink-0">
+                                        <span class="text-[9px] font-bold text-slate-500 font-sans">Fill</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+                                <label class="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 block animate-pulse font-sans">Quick Accent Swatches</label>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <button onclick="applyQRColorPreset('#4f46e5')" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 shadow-sm active:scale-95 transition-transform" style="background:#4f46e5"></button>
+                                    <button onclick="applyQRColorPreset('#e11d48')" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 shadow-sm active:scale-95 transition-transform" style="background:#e11d48"></button>
+                                    <button onclick="applyQRColorPreset('#15803d')" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 shadow-sm active:scale-95 transition-transform" style="background:#15803d"></button>
+                                    <button onclick="applyQRColorPreset('#b45309')" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 shadow-sm active:scale-95 transition-transform" style="background:#b45309"></button>
+                                    <button onclick="applyQRColorPreset('#ec4899')" class="w-5 h-5 rounded-full border border-white dark:border-slate-800 shadow-sm active:scale-95 transition-transform" style="background:#ec4899"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/20">
+                            <div class="flex items-center justify-between">
+                                <label class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest ml-1 font-sans">Center Logo / Cover</label>
+                                <button onclick="clearQRCover()" id="clearCoverBtn" class="hidden text-[9px] font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-trash-can"></i> Remove
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 gap-2.5">
+                                <label class="flex flex-col items-center justify-center p-3 bg-white dark:bg-slate-950 border-2 border-dashed border-indigo-100 dark:border-slate-800 hover:border-indigo-400 rounded-xl cursor-pointer transition-colors group">
+                                    <div class="flex items-center space-x-2 text-indigo-500 dark:text-indigo-400 group-hover:scale-105 transition-transform duration-200">
+                                        <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
+                                        <span class="text-[10px] font-extrabold font-sans">Upload Logo File</span>
+                                    </div>
+                                    <input type="file" id="qrCoverFileInput" accept="image/*" class="hidden" onchange="handleQRCoverUpload(this)">
+                                </label>
+                                
+                                <div class="relative flex items-center">
+                                    <span class="absolute left-3 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase font-mono bg-slate-100 dark:bg-slate-800/80 px-1 py-0.5 rounded">URL</span>
+                                    <input type="text" id="qrCoverUrlInput" placeholder="https://example.com/logo.png" oninput="applyQRCoverUrl(this.value)" class="w-full pl-11 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-[11px] font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition-shadow font-sans">
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-200/50 dark:border-slate-800/60">
+                                <label class="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2 font-sans">Quick Emoji Presets</label>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <button onclick="applyQREmojiCover('💖')" class="w-7 h-7 bg-white dark:bg-slate-950 border border-slate-200 rounded-lg flex items-center justify-center text-sm shadow-sm hover:scale-110 active:scale-90 transition-transform">💖</button>
+                                    <button onclick="applyQREmojiCover('💝')" class="w-7 h-7 bg-white dark:bg-slate-950 border border-slate-200 rounded-lg flex items-center justify-center text-sm shadow-sm hover:scale-110 active:scale-90 transition-transform">💝</button>
+                                    <button onclick="applyQREmojiCover('🎂')" class="w-7 h-7 bg-white dark:bg-slate-950 border border-slate-200 rounded-lg flex items-center justify-center text-sm shadow-sm hover:scale-110 active:scale-90 transition-transform">🎂</button>
+                                    <button onclick="applyQREmojiCover('🎄')" class="w-7 h-7 bg-white dark:bg-slate-950 border border-slate-200 rounded-lg flex items-center justify-center text-sm shadow-sm hover:scale-110 active:scale-90 transition-transform">🎄</button>
+                                    <button onclick="applyQREmojiCover('💌')" class="w-7 h-7 bg-white dark:bg-slate-950 border border-slate-200 rounded-lg flex items-center justify-center text-sm shadow-sm hover:scale-110 active:scale-90 transition-transform">💌</button>
+                                </div>
+                            </div>
+
+                            <div class="pt-2.5 border-t border-slate-200/50 dark:border-slate-800/60 space-y-2">
+                                <label class="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block font-sans">Write custom text label onto QR</label>
+                                <div class="flex items-center gap-1.5 text-[10px]">
+                                    <input type="text" id="qrTextCoverInput" placeholder="e.g. SCAN" maxlength="8" oninput="applyQRTextCoverFromUI()" class="flex-1 p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow text-center tracking-wider uppercase text-slate-900 dark:text-white">
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button onclick="toggleQRTextCoverShape(this)" id="qrTextCoverShapeBtn" data-shape="circle" class="w-7.5 h-7.5 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px]" title="Toggle Shape: Circle/Square">
+                                            <i class="fa-regular fa-circle"></i>
+                                        </button>
+                                        <div class="relative w-7.5 h-7.5 rounded-lg border border-slate-200 flex items-center justify-center bg-white cursor-pointer overflow-hidden shadow-sm" title="Pick Badge Color bg">
+                                            <input type="color" id="qrTextCoverBgPicker" value="#4f46e5" oninput="applyQRTextCoverFromUI()" class="absolute inset-0 opacity-0 cursor-pointer scale-150">
+                                            <div class="w-3.5 h-3.5 rounded" style="background-color: #4f46e5" id="qrTextCoverBgIndicator"></div>
+                                        </div>
+                                        <button onclick="toggleQRTextCoverColor(this)" id="qrTextCoverTextColorBtn" data-color="white" class="w-7.5 h-7.5 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-extrabold" title="Toggle color (White/Black)">
+                                            A
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="qrPosterSettingsArea" class="space-y-4 hidden animate-in fade-in slide-in-from-bottom duration-300">
+                        <div class="space-y-1.5 p-3.5 bg-indigo-50/20 dark:bg-slate-950/20 rounded-2xl border border-indigo-100/30 dark:border-slate-800/50">
+                            <label class="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest block font-sans">Poster Theme Template</label>
+                            <div class="grid grid-cols-5 gap-1.5 p-1 bg-slate-100/55 dark:bg-slate-955/40 rounded-xl">
+                                <button type="button" onclick="selectPosterTemplate('love')" id="posterTplBtn-love" class="p-2 transition-all flex flex-col items-center gap-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-500 text-indigo-600 dark:text-indigo-400 font-extrabold text-[8px] cursor-pointer">
+                                    <span class="text-sm">❤️</span>
+                                    <span class="text-[7.5px] font-bold tracking-tight truncate">Love</span>
+                                </button>
+                                <button type="button" onclick="selectPosterTemplate('anniversary')" id="posterTplBtn-anniversary" class="p-2 transition-all flex flex-col items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-700 dark:text-slate-350 font-bold border-2 border-transparent text-[8px] cursor-pointer">
+                                    <span class="text-sm">💍</span>
+                                    <span class="text-[7.5px] font-bold tracking-tight truncate">Wedding</span>
+                                </button>
+                                <button type="button" onclick="selectPosterTemplate('birthday')" id="posterTplBtn-birthday" class="p-2 transition-all flex flex-col items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-700 dark:text-slate-350 font-bold border-2 border-transparent text-[8px] cursor-pointer">
+                                    <span class="text-sm">🎂</span>
+                                    <span class="text-[7.5px] font-bold tracking-tight truncate">Age</span>
+                                </button>
+                                <button type="button" onclick="selectPosterTemplate('success')" id="posterTplBtn-success" class="p-2 transition-all flex flex-col items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-700 dark:text-slate-350 font-bold border-2 border-transparent text-[8px] cursor-pointer">
+                                    <span class="text-sm">🏆</span>
+                                    <span class="text-[7.5px] font-bold tracking-tight truncate">Victory</span>
+                                </button>
+                                <button type="button" onclick="selectPosterTemplate('greeting')" id="posterTplBtn-greeting" class="p-2 transition-all flex flex-col items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-700 dark:text-slate-350 font-bold border-2 border-transparent text-[8px] cursor-pointer">
+                                    <span class="text-sm">✨</span>
+                                    <span class="text-[7.5px] font-bold tracking-tight truncate">Hello</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-sans">Poster Heading Text (Top)</label>
+                            <input type="text" id="posterTextTopInput" value="when you put your hand in mine..." oninput="updatePosterText('top', this.value)" class="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 rounded-xl text-[11px] font-medium outline-none text-slate-700 dark:text-slate-200 font-sans">
+                        </div>
+
+                        <div class="space-y-1.5 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-sans">Caption / Subtitle (Below QR)</label>
+                            <input type="text" id="posterTextCaptionInput" value="kahani suno 2.0" oninput="updatePosterText('caption', this.value)" class="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 rounded-xl text-[11px] font-medium outline-none text-slate-700 dark:text-slate-200 font-sans">
+                        </div>
+
+                        <div class="space-y-1.5 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-sans">Display Name or Title (Uppercase)</label>
+                            <input type="text" id="posterNamesInput" value="SHREYA & PIYUSH" oninput="updatePosterText('names', this.value)" class="w-full px-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-200 rounded-xl text-[11px] font-black tracking-widest text-center focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200 uppercase font-sans">
+                        </div>
+
+                        <div class="space-y-1.5 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-sans">Date / Sub-caption (Footer)</label>
+                            <input type="text" id="posterDateInput" value="01-08-2015" oninput="updatePosterText('date', this.value)" class="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 rounded-xl text-[11px] font-semibold text-center focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-300 font-sans">
+                        </div>
+
+                        <div class="space-y-3.5 p-4 bg-slate-50 dark:bg-slate-800/65 rounded-2xl border border-slate-150">
+                            <div class="flex items-center justify-between">
+                                <label class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block font-sans">Poster Theme Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="posterColorPicker" value="#dc2626" oninput="updatePosterThemeColor(this.value)" class="w-7 h-7 rounded-lg cursor-pointer border-0 bg-transparent shrink-0">
+                                    <span id="posterColorText" class="text-[9px] font-mono text-slate-500 font-bold uppercase">#DC2626</span>
+                                </div>
+                            </div>
+                            <div class="pt-2.5 border-t border-slate-200/50 dark:border-slate-700/50">
+                                <label class="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2 font-sans">Quick Theme Colors</label>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <button onclick="updatePosterThemeColor('#dc2626')" class="w-5.5 h-5.5 rounded-full border border-white dark:border-slate-950 shadow-sm active:scale-110" style="background:#dc2626"></button>
+                                    <button onclick="updatePosterThemeColor('#be123c')" class="w-5.5 h-5.5 rounded-full border border-white dark:border-slate-950 shadow-sm active:scale-110" style="background:#be123c"></button>
+                                    <button onclick="updatePosterThemeColor('#f59e0b')" class="w-5.5 h-5.5 rounded-full border border-white dark:border-slate-950 shadow-sm active:scale-110" style="background:#f59e0b"></button>
+                                    <button onclick="updatePosterThemeColor('#0ea5e9')" class="w-5.5 h-5.5 rounded-full border border-white dark:border-slate-950 shadow-sm active:scale-110" style="background:#0ea5e9"></button>
+                                    <button onclick="updatePosterThemeColor('#10b981')" class="w-5.5 h-5.5 rounded-full border border-white dark:border-slate-950 shadow-sm active:scale-110" style="background:#10b981"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="editor.js"></script>
+</body>
+</html>

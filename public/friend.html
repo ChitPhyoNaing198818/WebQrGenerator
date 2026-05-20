@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFF Memories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght=700&family=Nunito:wght=400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Nunito', sans-serif; background: #e0f2fe; }
+        .polaroid { background: white; padding: 15px 15px 40px 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transform: rotate(-3deg); transition: transform 0.5s; }
+        .polaroid:hover { transform: rotate(0deg) scale(1.05); z-index: 10; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen p-8 flex flex-col items-center">
+    <audio id="bgMusic" loop></audio>
+    
+    <div class="max-w-md w-full space-y-12">
+        <header class="text-center space-y-2 animate__animated animate__fadeInDown">
+            <h1 id="friend-title" class="text-4xl font-black text-sky-900 leading-none">FOREVER <br><span class="text-sky-500">FRIENDS.</span></h1>
+            <p id="friend-subtitle" class="text-[10px] font-mono tracking-tighter uppercase p-1 bg-sky-200 inline-block px-3 rounded-full text-sky-700">Established 2024</p>
+        </header>
+
+        <section class="grid grid-cols-1 gap-12">
+            <div class="polaroid animate__animated animate__fadeInLeft">
+                <img id="img-1" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=600" class="w-full aspect-square object-cover grayscale transition-all hover:grayscale-0">
+                <p id="caption-1" class="font-mono text-[10px] mt-4 text-center text-slate-400">Memory #001: The best day ever.</p>
+            </div>
+
+            <div class="bg-white/50 backdrop-blur-sm p-8 rounded-[2rem] border-2 border-dashed border-sky-300 animate__animated animate__fadeInUp">
+                <h3 class="text-xl font-black text-sky-800 mb-4">A Note To You:</h3>
+                <p id="friend-msg" class="text-slate-600 leading-relaxed italic text-lg">“A good friend knows all your stories, but a best friend helped you write them.”</p>
+                <div class="mt-8 flex items-center gap-4">
+                    <div class="w-10 h-10 bg-sky-500 rounded-full flex items-center justify-center text-white font-black font-sans">B</div>
+                    <p id="friend-sign" class="text-sky-900 font-black">BFF 4 Lyfe</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const SCHEMA = [
+            { id: "friend_title", label: "Title Text", type: "text", defaultValue: "FOREVER FRIENDS." },
+            { id: "friend_subtitle", label: "Est. Year/Note", type: "text", defaultValue: "Established 2024" },
+            { id: "img_1", label: "Polaroid Photo", type: "image", defaultValue: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=600" },
+            { id: "caption_1", label: "Image Caption", type: "text", defaultValue: "Memory #001: The best day ever." },
+            { id: "friend_msg", label: "Special Message", type: "textarea", defaultValue: "“A good friend knows all your stories, but a best friend helped you write them.”" },
+            { id: "friend_sign", label: "Signature", type: "text", defaultValue: "BFF 4 Lyfe" },
+            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+        ];
+
+        function applyUpdate(data) {
+            if (!data) return;
+            if (data.friend_title) document.getElementById('friend-title').innerHTML = data.friend_title.replace('\n', '<br>');
+            if (data.friend_subtitle) document.getElementById('friend-subtitle').innerText = data.friend_subtitle;
+            if (data.img_1) document.getElementById('img-1').src = data.img_1;
+            if (data.caption_1) document.getElementById('caption-1').innerText = data.caption_1;
+            if (data.friend_msg) document.getElementById('friend-msg').innerText = data.friend_msg;
+            if (data.friend_sign) document.getElementById('friend-sign').innerText = data.friend_sign;
+            if (data.bg_track) {
+                const audio = document.getElementById('bgMusic');
+                if (audio.src !== data.bg_track) {
+                    audio.src = data.bg_track;
+                    audio.load();
+                }
+            }
+        }
+
+        window.addEventListener('message', e => {
+            if (e.data.type === 'UPDATE_DATA') applyUpdate(e.data.payload);
+            if (e.data.type === 'REQUEST_SNAPSHOT') window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('id')) {
+            fetch(`/api/card/${urlParams.get('id')}`).then(r => r.json()).then(d => applyUpdate(d));
+        }
+        window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: SCHEMA }, '*');
+    </script>
+</body>
+</html>

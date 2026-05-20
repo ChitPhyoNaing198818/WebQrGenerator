@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Anniversary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Quicksand:wght=300;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #fff5f5; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .scroll-container { scroll-snap-type: y mandatory; overflow-y: auto; height: 100vh; scroll-behavior: smooth; }
+        .scroll-section { scroll-snap-align: start; height: 100vh; position: relative; overflow: hidden; }
+        .bg-zoom-img { transition: transform 10s ease-out; transform: scale(1); }
+        .scroll-section.active .bg-zoom-img { transform: scale(1.15); }
+        .reveal-card { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal-card.active { opacity: 1; transform: translateY(0); }
+        @keyframes heartFloat { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translateY(-10vh) scale(1) rotate(360deg); opacity: 0; } }
+        .heart-particle { position: absolute; pointer-events: none; animation: heartFloat 8s linear infinite; color: #fb7185; }
+        .gradient-text { background: linear-gradient(45deg, #be123c, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="overflow-hidden select-none m-0 p-0">
+    <div id="particle-container" class="fixed inset-0 pointer-events-none z-10"></div>
+    <audio id="bg-music" loop></audio>
+    <button onclick="toggleMusic()" id="music-btn" class="hidden fixed top-6 right-6 z-50 glass p-4 rounded-full shadow-xl hover:scale-110 active:scale-95 transition-transform">🎵</button>
+    
+    <div id="lock-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#fffafa] p-6 transition-all duration-1000">
+        <div class="w-full max-w-sm glass rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(190,18,60,0.2)] overflow-hidden border border-rose-100">
+            <div class="p-10 text-center space-y-4">
+                <div class="text-5xl mb-6 animate-bounce">🔐</div>
+                <h1 id="lockscreen-title" class="text-3xl font-playfair font-bold text-rose-800">Happy Anniversary</h1>
+                <p id="lock-hint" class="text-rose-400 text-sm italic">ကိုယ်တို့ရဲ့ချစ်သူစဖြစ်တဲ့နေ့လေးကိုမှတ်မိသေးလား</p>
+                
+                <div class="mt-8 flex flex-col items-center">
+                    <div class="w-full bg-white/50 border border-rose-100 rounded-2xl py-4 px-6 text-2xl font-bold tracking-[0.5em] text-rose-600 h-16 flex items-center justify-center shadow-inner mb-6">
+                        <span id="password-display"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 w-full">
+                        <button onclick="pressKey('1')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">1</button>
+                        <button onclick="pressKey('2')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">2</button>
+                        <button onclick="pressKey('3')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">3</button>
+                        <button onclick="pressKey('4')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">4</button>
+                        <button onclick="pressKey('5')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">5</button>
+                        <button onclick="pressKey('6')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">6</button>
+                        <button onclick="pressKey('7')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">7</button>
+                        <button onclick="pressKey('8')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">8</button>
+                        <button onclick="pressKey('9')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">9</button>
+                        <button onclick="pressDelete()" class="h-12 glass rounded-2xl font-bold text-rose-400 text-xs uppercase tracking-tighter">back</button>
+                        <button onclick="pressKey('0')" class="h-12 glass rounded-2xl font-bold text-rose-600 hover:bg-rose-50">0</button>
+                        <button onclick="clearAll()" class="h-12 glass rounded-2xl font-bold text-rose-400 text-xs uppercase tracking-tighter">clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="main-story" class="hidden scroll-container w-full h-screen">
+        <section class="scroll-section flex flex-col items-center justify-center p-6 bg-[#fff6f7] text-center">
+            <div class="reveal-card active max-w-xl z-20 bg-white/85 backdrop-blur-md border-4 border-[#e19ba8] rounded-[2rem] p-8 shadow-2xl">
+                <p id="story-sub-title" class="text-xs tracking-widest text-[#b53d57] uppercase font-bold mb-1">တို့နှစ်ယောက်ရဲ့ ဖြတ်သန်းခဲ့တဲ့ ခရီးစဉ်</p>
+                <h1 id="counter-box" class="text-3xl md:text-4xl font-bold text-[#b53d57] tracking-tight my-6">
+                    <span id="days-counter" class="font-sans font-bold text-5xl">0</span>&nbsp;Days
+                </h1>
+                <div class="grid grid-cols-3 gap-4 border-t-2 border-dashed border-[#f4ced5] pt-4 mt-4 text-[#b53d57]">
+                    <div><p id="months-display" class="text-lg font-bold">၃၆</p><p class="text-[10px] text-zinc-500 font-semibold">လများ</p></div>
+                    <div><p id="smiles-display" class="text-lg font-bold">၁,၀၉၅</p><p class="text-[10px] text-zinc-500 font-semibold">အပြုံးများ</p></div>
+                    <div><p class="text-lg font-bold">∞</p><p class="text-[10px] text-zinc-500 font-semibold">အနာဂတ်</p></div>
+                </div>
+            </div>
+        </section>
+        <section class="scroll-section flex items-center justify-center p-8">
+            <div class="absolute inset-0 z-0 overflow-hidden"><img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600" class="bg-zoom-img w-full h-full object-cover brightness-[0.7]"></div>
+            <div class="reveal-card relative z-20 w-full max-w-md glass p-10 rounded-[3rem] shadow-2xl">
+                <h2 class="text-3xl font-playfair font-bold text-rose-800 mb-4">အရာအားလုံး စတင်ပြောင်းလဲခဲ့တဲ့အချိန်</h2>
+                <div class="h-1 w-16 bg-rose-200 mb-6 rounded-full"></div>
+                <p class="text-rose-900 leading-relaxed italic">Story description here.</p>
+            </div>
+        </section>
+        <section class="scroll-section flex items-center justify-center p-8">
+            <div class="absolute inset-0 z-0 overflow-hidden"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600" class="bg-zoom-img w-full h-full object-cover brightness-[0.7]"></div>
+            <div class="reveal-card relative z-20 w-full max-w-md glass p-10 rounded-[3rem] shadow-2xl">
+                <h2 class="text-3xl font-playfair font-bold text-rose-800 mb-4">လက်တွဲမြဲမြံစွာနဲ့ အတူတူရင့်ကျက်လာခြင်း</h2>
+                <div class="h-1 w-16 bg-rose-200 mb-6 rounded-full"></div>
+                <p class="text-rose-900 leading-relaxed italic">Story description here.</p>
+            </div>
+        </section>
+        <section class="scroll-section flex items-center justify-center p-8">
+            <div class="absolute inset-0 z-0 overflow-hidden"><img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600" class="bg-zoom-img w-full h-full object-cover brightness-[0.7]"></div>
+            <div class="reveal-card relative z-20 w-full max-w-md glass p-10 rounded-[3rem] shadow-2xl">
+                <h2 class="text-3xl font-playfair font-bold text-rose-800 mb-4">တစ်သက်တာလုံးအတွက် ခရီးစဉ်တစ်ခု</h2>
+                <div class="h-1 w-16 bg-rose-200 mb-6 rounded-full"></div>
+                <p class="text-rose-900 leading-relaxed italic">Story description here.</p>
+            </div>
+        </section>
+    </div>
+    <script>
+        let CORRECT_PASSWORD = "18052023";
+        let currentInput = "";
+        const bgMusic = document.getElementById('bg-music');
+        function pressKey(num) {
+            if (currentInput.length < 8) { currentInput += num; updateDisplay(); }
+            if (currentInput.length === 8) setTimeout(checkPassword, 300);
+        }
+        function pressDelete() { currentInput = currentInput.slice(0, -1); updateDisplay(); }
+        function clearAll() { currentInput = ""; updateDisplay(); }
+        function updateDisplay() { document.getElementById('password-display').innerText = currentInput || ""; }
+        function checkPassword() {
+            if (currentInput === CORRECT_PASSWORD) {
+                document.getElementById('lock-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('lock-screen').style.display = 'none', 1000);
+                document.getElementById('main-story').classList.remove('hidden');
+                document.getElementById('music-btn').classList.remove('hidden');
+                bgMusic.play().catch(()=>{});
+                initHeartEngine();
+                animateCounter(0, 1095, 3000);
+                startScrollObserver();
+            } else { 
+                const screen = document.querySelector('#lock-screen > div');
+                screen.classList.add('animate__animated', 'animate__shakeX');
+                setTimeout(() => { screen.classList.remove('animate__animated', 'animate__shakeX'); clearAll(); }, 500);
+            }
+        }
+        function animateCounter(start, end, duration) {
+            const displayElement = document.getElementById("days-counter");
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                displayElement.innerText = Math.floor(progress * (end - start) + start).toLocaleString();
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+        function startScrollObserver() {
+            const sections = document.querySelectorAll('.scroll-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const card = entry.target.querySelector('.reveal-card');
+                    if (entry.isIntersecting) { entry.target.classList.add('active'); if(card) card.classList.add('active'); }
+                    else { entry.target.classList.remove('active'); if(card) card.classList.remove('active'); }
+                });
+            }, { threshold: 0.35 });
+            sections.forEach(section => observer.observe(section));
+        }
+        function initHeartEngine() {
+            setInterval(() => {
+                const p = document.createElement('div'); p.className = 'heart-particle'; p.innerText = '❤️';
+                p.style.left = Math.random() * 100 + 'vw'; p.style.fontSize = Math.random() * 14 + 12 + 'px';
+                p.style.animationDuration = Math.random() * 3 + 5 + 's';
+                document.getElementById('particle-container').appendChild(p); setTimeout(() => p.remove(), 8000);
+            }, 700);
+        }
+        function toggleMusic() { if (bgMusic.paused) bgMusic.play(); else bgMusic.pause(); }
+
+        const SCHEMA = [
+            { id: "lock_password", label: "Password (8 Digits)", type: "text", defaultValue: "18052023" },
+            { id: "lock_title", label: "Lockscreen Heading", type: "text", defaultValue: "Happy 3years Anniversary" },
+            { id: "lock_hint", label: "Lockscreen Hint", type: "text", defaultValue: "ကိုယ်တို့ရဲ့ချစ်သူစဖြစ်တဲ့နေ့လေးကိုမှတ်မိသေးလား" },
+            { id: "story_1_title", label: "Chapter 1 Title", type: "text", defaultValue: "အရာအားလုံး စတင်ပြောင်းလဲခဲ့တဲ့အချိန်" },
+            { id: "story_1_desc", label: "Chapter 1 Description", type: "textarea", defaultValue: "တို့နှစ်ယောက်ရဲ့ အစောဆုံးအတူတူရိုက်ခဲ့တဲ့ ဓာတ်ပုံလေးကို ပြန်ကြည့်တိုင်း မသိစိတ်ကနေ ပြုံးမိနေတုန်းပဲ။" },
+            { id: "story_1_img", label: "Chapter 1 Image", type: "image", defaultValue: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600" },
+            { id: "story_2_title", label: "Chapter 2 Title", type: "text", defaultValue: "လက်တွဲမြဲမြံစွာနဲ့ အတူတူရင့်ကျက်လာခြင်း" },
+            { id: "story_2_desc", label: "Chapter 2 Description", type: "textarea", defaultValue: "တို့နှစ်ယောက်က ချစ်သူသက်သက်တင်မဟုတ်တော့ဘဲ အပြန်အလှန် အားကိုးရတဲ့ မိသားစုလို ဖြစ်လာခဲ့ကြတယ်။" },
+            { id: "story_2_img", label: "Chapter 2 Image", type: "image", defaultValue: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600" },
+            { id: "story_3_title", label: "Chapter 3 Title", type: "text", defaultValue: "တစ်သက်တာလုံးအတွက် ခရီးစဉ်တစ်ခု" },
+            { id: "story_3_desc", label: "Chapter 3 Description", type: "textarea", defaultValue: "မင်းဟာ ကိုယ့်ရဲ့ နွေးထွေးတဲ့ အိမ်ကလေးဖြစ်သလို အချစ်ဆုံးသူငယ်ချင်းလည်း ဖြစ်ပါတယ်။" },
+            { id: "story_3_img", label: "Chapter 3 Image", type: "image", defaultValue: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600" },
+            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+        ];
+        function register() { window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: SCHEMA }, '*'); }
+        setTimeout(register, 300);
+        function applyUpdate(data) {
+            if (!data) return;
+            if (data.lock_password) CORRECT_PASSWORD = data.lock_password;
+            if (data.lock_title) document.querySelector('#lockscreen-title').innerText = data.lock_title;
+            if (data.lock_hint) document.querySelector('#lock-hint').innerText = data.lock_hint;
+            
+            const sections = document.querySelectorAll('.scroll-section');
+            if (sections.length >= 4) {
+                // Chapter 1
+                if (data.story_1_title) sections[1].querySelector('h2').innerText = data.story_1_title;
+                if (data.story_1_desc) sections[1].querySelector('p').innerText = data.story_1_desc;
+                if (data.story_1_img) sections[1].querySelector('.bg-zoom-img').src = data.story_1_img;
+                
+                // Chapter 2
+                if (data.story_2_title) sections[2].querySelector('h2').innerText = data.story_2_title;
+                if (data.story_2_desc) sections[2].querySelector('p').innerText = data.story_2_desc;
+                if (data.story_2_img) sections[2].querySelector('.bg-zoom-img').src = data.story_2_img;
+                
+                // Chapter 3
+                if (data.story_3_title) sections[3].querySelector('h2').innerText = data.story_3_title;
+                if (data.story_3_desc) sections[3].querySelector('p').innerText = data.story_3_desc;
+                if (data.story_3_img) sections[3].querySelector('.bg-zoom-img').src = data.story_3_img;
+            }
+            
+            if (data.bg_track) {
+                if (bgMusic.src !== data.bg_track) {
+                    bgMusic.src = data.bg_track;
+                    bgMusic.load();
+                }
+            }
+        }
+        window.addEventListener('message', e => {
+            if (e.data.type === 'UPDATE_DATA') {
+                applyUpdate(e.data.payload);
+            }
+            if (e.data.type === 'REQUEST_SNAPSHOT') {
+                window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+            }
+        });
+        const urlP = new URLSearchParams(window.location.search);
+        if (urlP.has('id')) {
+            fetch(`/api/card/${urlP.get('id')}`)
+                .then(res => res.json())
+                .then(data => applyUpdate(data))
+                .catch(err => console.error("Failed to fetch card data:", err));
+        } else if (urlP.has('studio_payload')) {
+          try { applyUpdate(JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(decodeURIComponent(urlP.get('studio_payload'))), c => c.charCodeAt(0))))); } catch(e) {}
+        }
+    </script>
+</body>
+</html>

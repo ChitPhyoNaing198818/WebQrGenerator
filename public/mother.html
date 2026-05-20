@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To My Dearest Mother</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:italic,wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Libre Baskerville', serif; background: #fdf2f8; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .hero-gradient { background: linear-gradient(to bottom, rgba(253,242,248,0) 0%, rgba(253,242,248,1) 100%); }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+    <audio id="bgMusic" loop></audio>
+    
+    <div class="relative w-full h-[60vh] overflow-hidden">
+        <img id="mom-hero" src="https://images.unsplash.com/photo-1594911773960-b5273d6664e?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover">
+        <div class="absolute inset-0 hero-gradient"></div>
+        <div class="absolute bottom-10 left-0 w-full text-center p-6">
+            <h1 id="mom-title" class="text-4xl md:text-5xl font-playfair text-pink-900 animate__animated animate__fadeInDown">To My Dearest Mother</h1>
+        </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto px-6 mt-[-20px] relative z-10">
+        <div class="bg-white p-10 rounded-[2rem] shadow-xl border border-pink-100 space-y-8 animate__animated animate__fadeInUp">
+            <div class="text-center">
+                <span class="text-3xl text-pink-300">❦</span>
+                <p id="mom-message" class="text-lg italic text-slate-700 leading-relaxed mt-4">“All that I am, or ever hope to be, I owe to my angel mother.”</p>
+                <p id="mom-personal" class="text-sm text-slate-500 mt-6 font-sans uppercase tracking-[0.2em]">Thank you for everything, Mom.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="aspect-square rounded-2xl bg-pink-50 flex items-center justify-center p-8 text-center border border-pink-100">
+                    <p class="text-[10px] text-pink-800 font-bold uppercase tracking-widest">Love Unconditional</p>
+                </div>
+                <div class="aspect-square rounded-2xl bg-emerald-50 flex items-center justify-center p-8 text-center border border-emerald-100">
+                    <p class="text-[10px] text-emerald-800 font-bold uppercase tracking-widest">Patience Infinite</p>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 text-center font-sans">
+                <p id="mom-signature" class="text-xs font-bold text-slate-400">YOUR SON / DAUGHTER</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCHEMA = [
+            { id: "mom_title", label: "Heading", type: "text", defaultValue: "To My Dearest Mother" },
+            { id: "mom_message", label: "Core Quote/Message", type: "textarea", defaultValue: "“All that I am, or ever hope to be, I owe to my angel mother.”" },
+            { id: "mom_personal", label: "Small Note", type: "text", defaultValue: "Thank you for everything, Mom." },
+            { id: "mom_hero", label: "Background Photo", type: "image", defaultValue: "https://images.unsplash.com/photo-1594911773960-b5273d6664e?auto=format&fit=crop&q=80&w=1200" },
+            { id: "mom_signature", label: "From (Name)", type: "text", defaultValue: "YOUR SON / DAUGHTER" },
+            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" }
+        ];
+
+        function applyUpdate(data) {
+            if (!data) return;
+            if (data.mom_title) document.getElementById('mom-title').innerText = data.mom_title;
+            if (data.mom_message) document.getElementById('mom-message').innerText = data.mom_message;
+            if (data.mom_personal) document.getElementById('mom-personal').innerText = data.mom_personal;
+            if (data.mom_hero) document.getElementById('mom-hero').src = data.mom_hero;
+            if (data.mom_signature) document.getElementById('mom-signature').innerText = data.mom_signature;
+            if (data.bg_track) {
+                const audio = document.getElementById('bgMusic');
+                if (audio.src !== data.bg_track) {
+                    audio.src = data.bg_track;
+                    audio.load();
+                }
+            }
+        }
+
+        window.addEventListener('message', e => {
+            if (e.data.type === 'UPDATE_DATA') applyUpdate(e.data.payload);
+            if (e.data.type === 'REQUEST_SNAPSHOT') window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('id')) {
+            fetch(`/api/card/${urlParams.get('id')}`).then(r => r.json()).then(d => applyUpdate(d));
+        }
+        window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: SCHEMA }, '*');
+    </script>
+</body>
+</html>

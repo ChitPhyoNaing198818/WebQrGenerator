@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Hero - Dad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght=700&family=Roboto:wght=400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; background: #f1f5f9; }
+        .font-oswald { font-family: 'Oswald', sans-serif; }
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <audio id="bgMusic" loop></audio>
+    
+    <div class="relative w-full h-[45vh] bg-slate-900 clip-slant overflow-hidden shadow-2xl">
+        <img id="dad-img" src="https://images.unsplash.com/photo-1544144433-d50aff500b91?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover opacity-60">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-t from-slate-900/80 to-transparent">
+            <h1 id="dad-title" class="text-5xl md:text-7xl font-oswald text-white uppercase tracking-tighter animate__animated animate__fadeInDown">MY HERO. MY DAD.</h1>
+        </div>
+    </div>
+
+    <div class="max-w-xl mx-auto px-6 mt-[-40px] mb-20 relative z-20">
+        <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl border-t-8 border-indigo-600 animate__animated animate__fadeInUp">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-16 h-1 w-12 bg-indigo-600 rounded-full"></div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">A Tribute To The Best</span>
+            </div>
+
+            <p id="dad-message" class="text-lg md:text-xl text-slate-700 leading-relaxed font-medium">“Dads are most ordinary men turned by love into heroes, adventurers, story-tellers and singers of song.”</p>
+            
+            <div class="mt-12 space-y-6">
+                <div class="p-6 bg-slate-50 rounded-2xl border-l-4 border-slate-300">
+                    <p id="dad-sub" class="text-sm italic text-slate-500">I’m so proud to call you my father. Thank you for teaching me strength and kindness.</p>
+                </div>
+                
+                <div class="text-right">
+                    <p id="dad-signature" class="text-indigo-600 font-bold text-lg font-oswald uppercase">— WITH LOVE, [YOUR NAME]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCHEMA = [
+            { id: "dad_title", label: "Hero Banner Text", type: "text", defaultValue: "MY HERO. MY DAD." },
+            { id: "dad_message", label: "Main Tribute Quote", type: "textarea", defaultValue: "“Dads are most ordinary men turned by love into heroes, adventurers, story-tellers and singers of song.”" },
+            { id: "dad_sub", label: "Personal Message", type: "textarea", defaultValue: "I’m so proud to call you my father. Thank you for teaching me strength and kindness." },
+            { id: "dad_img", label: "Dad's Best Photo", type: "image", defaultValue: "https://images.unsplash.com/photo-1544144433-d50aff500b91?auto=format&fit=crop&q=80&w=1200" },
+            { id: "dad_signature", label: "Signature", type: "text", defaultValue: "— WITH LOVE, [YOUR NAME]" },
+            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+        ];
+
+        function applyUpdate(data) {
+            if (!data) return;
+            if (data.dad_title) document.getElementById('dad-title').innerText = data.dad_title;
+            if (data.dad_message) document.getElementById('dad-message').innerText = data.dad_message;
+            if (data.dad_sub) document.getElementById('dad-sub').innerText = data.dad_sub;
+            if (data.dad_img) document.getElementById('dad-img').src = data.dad_img;
+            if (data.dad_signature) document.getElementById('dad-signature').innerText = data.dad_signature;
+            if (data.bg_track) {
+                const audio = document.getElementById('bgMusic');
+                if (audio.src !== data.bg_track) {
+                    audio.src = data.bg_track;
+                    audio.load();
+                }
+            }
+        }
+
+        window.addEventListener('message', e => {
+            if (e.data.type === 'UPDATE_DATA') applyUpdate(e.data.payload);
+            if (e.data.type === 'REQUEST_SNAPSHOT') window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('id')) {
+            fetch(`/api/card/${urlParams.get('id')}`).then(r => r.json()).then(d => applyUpdate(d));
+        }
+        window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: SCHEMA }, '*');
+    </script>
+</body>
+</html>

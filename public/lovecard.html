@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For My Love</title>
+  <meta name="description" content="A lovely digital card for you.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600;700&family=Caveat:wght=500;600&family=Inter:wght=300;400;500&family=Noto+Sans+Myanmar:wght=400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --envelope-back: #ffb3c6;
+      --envelope-left: #ff8fab;
+      --envelope-right: #ff8fab;
+      --envelope-bottom: #fb6f92;
+      --envelope-top: #ff758f;
+      --bg: #fff0f3;
+      --text: #590d22;
+      --white: #fffdfc;
+      --wax: #c1121f;
+      --wax-icon: "❤";
+      --side-emoji: "🌸";
+    }
+    body {
+      margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
+      background: var(--bg); font-family: 'Inter', 'Noto Sans Myanmar', sans-serif;
+      display: flex; justify-content: center; align-items: center; perspective: 1000px;
+      transition: background 0.5s ease;
+    }
+    .envelope-wrapper {
+      position: relative; width: 280px; height: 200px; background: var(--envelope-back);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); cursor: pointer; transform-style: preserve-3d;
+      transition: transform 0.5s ease, background 0.5s ease; z-index: 10;
+    }
+    .envelope-wrapper.open { transform: translateY(60px) rotateX(-5deg); }
+    .flap, .left-side, .right-side, .bottom-side { position: absolute; width: 0; height: 0; border-style: solid; z-index: 3; transition: all 0.5s ease; }
+    .flap { top: 0; left: 0; border-width: 100px 140px 0 140px; border-color: var(--envelope-top) transparent transparent transparent; transform-origin: top; transform: rotateX(0deg); z-index: 5; }
+    .envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 1; }
+    .left-side { bottom: 0; left: 0; border-width: 100px 0 100px 140px; border-color: transparent transparent transparent var(--envelope-left); }
+    .right-side { bottom: 0; right: 0; border-width: 100px 140px 100px 0; border-color: transparent var(--envelope-right) transparent transparent; }
+    .bottom-side { bottom: 0; left: 0; border-width: 0 140px 100px 140px; border-color: transparent transparent var(--envelope-bottom) transparent; z-index: 4; }
+    .wax-seal {
+      position: absolute; top: 100px; left: 140px; width: 44px; height: 44px; background: var(--wax);
+      border-radius: 50px; transform: translate(-50%, -50%); z-index: 6; display: flex; justify-content: center;
+      align-items: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.5s ease, opacity 0.3s ease;
+    }
+    .wax-seal::after { content: var(--wax-icon); color: #fff; font-size: 20px; }
+    .envelope-wrapper.open .wax-seal { transform: translate(-50%, -150px) scale(0); opacity: 0; }
+    #love-seal { position: absolute; top: 130px; left: 50%; transform: translateX(-50%); font-family: 'Caveat', cursive; font-size: 18px; color: var(--white); z-index: 6; white-space: nowrap; pointer-events: none; transition: opacity 0.3s ease; }
+    .envelope-wrapper.open #love-seal { opacity: 0; }
+    .letter-card { position: absolute; top: 10px; left: 10px; width: 260px; height: 180px; background: var(--white); border-radius: 4px; z-index: 2; box-sizing: border-box; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: transform 0.5s ease, height 0.5s ease, top 0.5s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .envelope-wrapper.open .letter-card { transform: translateY(-160px); height: 320px; top: 0; z-index: 4; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); }
+    #love-title { font-family: 'Dancing Script', cursive; font-size: 24px; color: var(--text); margin: 0 0 10px 0; transition: color 0.5s ease; }
+    .message-container { width: 100%; flex-grow: 1; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 5px; box-sizing: border-box; }
+    #typewriter-text { font-size: 15px; color: var(--text); line-height: 1.6; margin: 0; word-wrap: break-word; white-space: pre-wrap; font-family: 'Inter', 'Noto Sans Myanmar', sans-serif; }
+    #hints { position: absolute; bottom: -50px; left: 0; width: 100%; text-align: center; font-family: 'Caveat', cursive; font-size: 20px; color: var(--text); transition: color 0.5s ease, opacity 0.3s ease; }
+    .envelope-wrapper.open #hints { opacity: 0; }
+    .side-decor { position: absolute; font-size: 24px; pointer-events: none; animation: gentle-bounce 3s infinite ease-in-out; opacity: 0.7; }
+    .side-decor.left { left: 40px; top: 30%; animation-delay: 0s; }
+    .side-decor.right { right: 40px; top: 40%; animation-delay: 1.5s; }
+    .side-decor::before { content: var(--side-emoji); }
+    @keyframes gentle-bounce { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+    .particle { position: absolute; pointer-events: none; z-index: 1; user-select: none; }
+    @keyframes float { 0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-100vh) rotate(360deg) scale(0.5); opacity: 0; } }
+    .audio-btn { position: absolute; bottom: 20px; right: 20px; width: 36px; height: 36px; background: var(--white); border: 1px solid rgba(0,0,0,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 100; font-size: 14px; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="side-decor left"></div>
+  <div class="side-decor right"></div>
+  <div class="envelope-wrapper" id="envelope" onclick="openEnvelope(event)">
+    <div class="flap"></div>
+    <div class="left-side"></div>
+    <div class="right-side"></div>
+    <div class="bottom-side"></div>
+    <div class="wax-seal"></div>
+    <div id="love-seal">Tap to open</div>
+    <div class="letter-card">
+      <h1 id="love-title">My Dearest</h1>
+      <div class="message-container">
+         <p id="typewriter-text"></p>
+      </div>
+    </div>
+    <div id="hints">You have a sweet message waiting inside</div>
+  </div>
+  <button class="audio-btn" id="audioBtn" onclick="toggleAudio(event)">🎵</button>
+  <audio id="bg-music" loop>
+    <source id="music-src" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+  <script>
+    const studioManifest = [
+      { id: 'title', label: 'စာအိတ်တွင်း ခေါင်းစဉ်', type: 'text', defaultValue: 'My Dearest' },
+      { id: 'message', label: 'ရင်ဖွင့်လွှာ စာသားများ', type: 'textarea', defaultValue: 'ဒီကမ္ဘာမှာ မင်းကို အချစ်ဆုံးပဲ။ မင်းနဲ့ ဆုံတွေ့ခွင့်ရတာ ငါ့ဘဝရဲ့ အကောင်းဆုံး ကံကောင်းခြင်းတစ်ခုပါ။ 💖' },
+      { id: 'sealText', label: 'တံဆိပ်ခတ်နှိပ်စာသား', type: 'text', defaultValue: 'Tap to open' },
+      { id: 'hints', label: 'စာအိတ်အောက် ညွှန်ကြားစာ', type: 'text', defaultValue: 'You have a sweet message waiting inside' },
+      { id: 'colorBg', label: 'နောက်ခံ Background အရောင်', type: 'color', defaultValue: '#fff0f3' },
+      { id: 'colorText', label: 'စာသား စာလုံးအရောင်', type: 'color', defaultValue: '#590d22' },
+      { id: 'colorEnvelope', label: 'စာအိတ် ကိုယ်ထည်အရောင်', type: 'color', defaultValue: '#ff8fab' },
+      { id: 'colorFlap', label: 'စာအိတ် အဖုံးအရောင်', type: 'color', defaultValue: '#ff758f' },
+      { id: 'waxIcon', label: 'တံဆိပ်တုံး Icon (Emoji)', type: 'select', defaultValue: '❤', options: ['❤', '💌', '🌹', '🦋', '💍', '🐧', '🐼'] },
+      { id: 'sideEmoji', label: 'ဘေးဘက် အလှဆင် (Emoji)', type: 'select', defaultValue: '🌸', options: ['🌸', '💖', '✨', '🌹', '🦋', '⭐', '🎈', '🍀', '🍎'] },
+      { id: 'bgMusic', label: 'နောက်ခံ တေးဂီတ (Music Upload/URL)', type: 'audio', defaultValue: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }
+    ];
+
+    let dynamicState = {};
+    studioManifest.forEach(f => dynamicState[f.id] = f.defaultValue);
+
+    function registerWithStudio() {
+      window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: studioManifest }, '*');
+    }
+    setTimeout(registerWithStudio, 300);
+
+    function applyStateUpdate(payload) {
+      if(!payload) return;
+      dynamicState = { ...dynamicState, ...payload };
+      if (dynamicState.hints) document.getElementById('hints').innerText = dynamicState.hints;
+      if (dynamicState.title) document.getElementById('love-title').innerText = dynamicState.title;
+      if (dynamicState.sealText) document.getElementById('love-seal').innerText = dynamicState.sealText;
+      const typewriterArea = document.getElementById('typewriter-text');
+      if (typewriterArea && dynamicState.message) {
+        typewriterArea.textContent = dynamicState.message;
+      }
+      const root = document.documentElement;
+      if (dynamicState.colorBg) root.style.setProperty('--bg', dynamicState.colorBg);
+      if (dynamicState.colorText) root.style.setProperty('--text', dynamicState.colorText);
+      if (dynamicState.colorEnvelope) {
+         root.style.setProperty('--envelope-left', dynamicState.colorEnvelope);
+         root.style.setProperty('--envelope-right', dynamicState.colorEnvelope);
+         root.style.setProperty('--envelope-back', dynamicState.colorEnvelope);
+      }
+      if (dynamicState.colorFlap) {
+         root.style.setProperty('--envelope-top', dynamicState.colorFlap);
+         root.style.setProperty('--envelope-bottom', dynamicState.colorFlap);
+         root.style.setProperty('--wax', dynamicState.colorFlap);
+      }
+      if (dynamicState.waxIcon) root.style.setProperty('--wax-icon', `"${dynamicState.waxIcon}"`);
+      if (dynamicState.sideEmoji) root.style.setProperty('--side-emoji', `"${dynamicState.sideEmoji}"`);
+      if(dynamicState.bgMusic) {
+        const audio = document.getElementById('bg-music');
+        const src = document.getElementById('music-src');
+        if(src.src !== dynamicState.bgMusic) {
+          src.src = dynamicState.bgMusic;
+          audio.load();
+          if(isMusicPlaying) {
+             audio.play().catch(err => console.log("Audio play blocked:", err));
+          }
+        }
+      }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('id')) {
+      fetch(`/api/card/${urlParams.get('id')}`)
+        .then(res => res.json())
+        .then(data => applyStateUpdate(data))
+        .catch(err => console.error("Failed to fetch card data:", err));
+    } else if (urlParams.has('studio_payload')) {
+      try {
+        const base64 = decodeURIComponent(urlParams.get('studio_payload'));
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const decodedString = new TextDecoder().decode(bytes);
+        const data = JSON.parse(decodedString);
+        applyStateUpdate(data);
+      } catch(e) {
+        console.error("Payload decoding failed", e);
+      }
+    }
+
+    window.addEventListener('message', (e) => {
+      if (!e.data) return;
+      if (e.data.type === 'UPDATE_DATA') {
+        applyStateUpdate(e.data.payload);
+      } else if (e.data.type === 'REQUEST_SNAPSHOT') {
+        window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+      }
+    });
+
+    let isOpened = false;
+    let isMusicPlaying = false;
+
+    function openEnvelope(e) {
+      if(isOpened) return;
+      isOpened = true;
+      const env = document.getElementById('envelope');
+      env.classList.add('open');
+      startAudio();
+      setTimeout(() => {
+        typeWriterEffect();
+        createParticles();
+      }, 600);
+    }
+
+    function typeWriterEffect() {
+      const text = dynamicState.message || '';
+      const container = document.getElementById('typewriter-text');
+      container.textContent = ''; 
+      let index = 0;
+      function type() {
+        if (index < text.length) {
+          container.textContent += text.charAt(index);
+          index++;
+          setTimeout(type, 60);
+        }
+      }
+      type();
+    }
+
+    function startAudio() {
+      const audio = document.getElementById('bg-music');
+      audio.play().then(() => {
+        isMusicPlaying = true;
+        document.getElementById('audioBtn').innerText = '⏸';
+      }).catch(err => console.log("Audio autoplay protected:", err));
+    }
+
+    function toggleAudio(e) {
+      e.stopPropagation(); 
+      const audio = document.getElementById('bg-music');
+      if(isMusicPlaying) {
+        audio.pause();
+        document.getElementById('audioBtn').innerText = '🎵';
+      } else {
+        audio.play();
+        document.getElementById('audioBtn').innerText = '⏸';
+      }
+      isMusicPlaying = !isMusicPlaying;
+    }
+
+    function createParticles() {
+      const container = document.body;
+      const emoji = dynamicState.sideEmoji || '🌸';
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.innerHTML = emoji;
+          particle.style.left = Math.random() * 100 + 'vw';
+          particle.style.top = Math.random() * 100 + 'vh';
+          particle.style.fontSize = Math.random() * 18 + 12 + 'px';
+          particle.style.animation = `float ${Math.random() * 4 + 5}s infinite linear`;
+          particle.style.animationDelay = `-${Math.random() * 5}s`;
+          container.appendChild(particle);
+        }, i * 250);
+      }
+    }
+
+    document.body.addEventListener('click', (e) => {
+       if(isOpened) {
+          spawnPopHearts(e.clientX, e.clientY);
+       }
+    });
+
+    function spawnPopHearts(x, y) {
+      for (let i = 0; i < 8; i++) {
+        const heart = document.createElement('div');
+        heart.innerHTML = '❤';
+        heart.style.position = 'absolute';
+        heart.style.left = x + 'px';
+        heart.style.top = y + 'px';
+        heart.style.color = '#c1121f';
+        heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        heart.style.pointerEvents = 'none';
+        heart.style.zIndex = '1000';
+        heart.style.transition = 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+        document.body.appendChild(heart);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 80 + 40;
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity - 30; 
+            heart.style.transform = `translate(${tx}px, ${ty}px) scale(0)`;
+            heart.style.opacity = '0';
+          });
+        });
+        setTimeout(() => heart.remove(), 800);
+      }
+    }
+  </script>
+</body>
+</html>
