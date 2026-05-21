@@ -83,21 +83,31 @@
             animation: float-brand 3.5s ease-in-out infinite;
             transition: all 0.3s ease;
         }
+        /* Neon Title shadow glow styles */
+        .neon-title {
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.25), 0 0 20px rgba(99, 102, 241, 0.15);
+            transition: text-shadow 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        .dark .neon-title {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(129, 140, 248, 0.75), 0 0 20px rgba(147, 51, 234, 0.55), 0 0 32px rgba(236, 72, 153, 0.35);
+        }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between p-3.5 sm:p-5 md:p-6 transition-colors duration-500 overflow-y-auto no-scrollbar">
+<body class="relative min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between p-3.5 sm:p-5 md:p-6 transition-colors duration-500 overflow-y-auto no-scrollbar">
+
+    <!-- Animated Particle Network Background -->
+    <canvas id="particles-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
 
     <!-- Top Glow Effect -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-[60px] pointer-events-none"></div>
 
     <!-- Header & App Logo Info -->
-    <header class="text-center mt-2 z-10 animate-fade-in">
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100/60 dark:border-indigo-900/40 mb-3 shadow-[0_2px_10px_rgba(99,102,241,0.05)] animate-brand-badge">
-            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-            <span class="text-[9px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Web&QrGenerator v1.0</span>
-        </div>
-        <h1 id="tourTitle" class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">How to Create</h1>
-        <p id="tourSubtitle" class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 px-4 leading-relaxed">Turn your special moments into beautiful digital Web pages & QR cards</p>
+    <header class="text-center mt-5 mb-8 z-10 animate-fade-in w-full max-w-full px-4">
+        <h1 id="tourTitle" class="hidden">How to Create</h1>
+        <p id="tourSubtitle" class="text-[13px] min-[340px]:text-[14px] min-[375px]:text-[15.5px] min-[425px]:text-[17.5px] sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight text-slate-900 dark:text-white neon-title px-1 leading-tight sm:leading-snug md:leading-normal max-w-3xl mx-auto min-h-[40px] sm:min-h-[56px]">
+            <span id="subtitle-text" class="cursor-type text-slate-900 dark:text-white"></span>
+        </p>
     </header>
 
     <!-- Interactive Demonstration Canvas / Phone Sandbox -->
@@ -216,7 +226,7 @@
         </div>
 
         <!-- Right Container: Reusable Interactive Mini iPhone Mockup (Takes 48% width on desktop) -->
-        <div class="w-full md:w-[48%] flex items-center justify-center shrink-0 z-10">
+        <div class="w-full md:w-[48%] flex items-center justify-center shrink-0 z-10 p-2">
             <!-- Sleek miniaturized device frame with realistic pill and notch -->
             <div class="relative w-[124px] h-[244px] sm:w-[155px] sm:h-[305px] md:w-[190px] md:h-[374px] lg:w-[220px] lg:h-[433px] xl:w-[240px] xl:h-[472px] bg-slate-950 rounded-[20px] sm:rounded-[26px] md:rounded-[30px] lg:rounded-[34px] xl:rounded-[38px] border-[3px] sm:border-[5px] md:border-[6px] lg:border-[8px] border-slate-800 dark:border-slate-800 shadow-[0_8px_24px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col justify-between select-none transition-all duration-300">
                 <!-- Glowing side lens flare -->
@@ -342,11 +352,10 @@
             if (!screen) return;
             
             // Clean up old classes
-            screen.className = "relative flex-1 flex flex-col items-center justify-center p-2 text-white overflow-hidden text-center transition-all duration-300";
+            screen.className = "relative flex-1 w-full flex flex-col items-center justify-center p-2 text-white overflow-hidden text-center transition-all duration-300";
             
             if (currentStep === 3) {
                 // Magic compiling overlay
-                screen.className += " bg-slate-900";
                 screen.innerHTML = `
                     <div class="space-y-1.5 sm:space-y-3 animate-pulse">
                         <div class="w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-dashed border-indigo-400 animate-spin mx-auto flex items-center justify-center">
@@ -444,10 +453,10 @@
             } else if (activeTemplateId === 'btn-anniversary') {
                 screen.className += " bg-gradient-to-br from-purple-700 via-indigo-600 to-purple-600";
                 screen.innerHTML = `
-                    <div class="space-y-1 sm:space-y-2 flex flex-col items-center">
+                    <div class="space-y-1 sm:space-y-2 flex flex-col items-center font-sans">
                         <span class="text-[12px] sm:text-[20px] md:text-[26px] animate-pulse font-mono">💍</span>
                         <div class="bg-white/10 rounded-md p-1 border border-white/15 max-w-[90px] sm:max-w-[120px] md:max-w-[140px] lg:max-w-[160px] text-[5px] sm:text-[8px] md:text-[10px] lg:text-[11px] min-h-[14px] sm:min-h-[22px]">
-                            <span id="mini-typing-text" class="block leading-tight">
+                            <span id="mini-typing-text" class="block leading-tight font-bold">
                                 ${currentStep === 2 ? "" : "Happy Anniversary!"}
                             </span>
                         </div>
@@ -459,7 +468,7 @@
                     <div class="space-y-1 sm:space-y-2 flex flex-col items-center">
                         <div class="text-[12px] sm:text-[20px] md:text-[26px] animate-bounce">🎄</div>
                         <div class="bg-white/10 rounded-md p-1 border border-white/15 max-w-[90px] sm:max-w-[120px] md:max-w-[140px] lg:max-w-[160px] text-[5px] sm:text-[8px] md:text-[10px] lg:text-[11px] min-h-[14px] sm:min-h-[22px]">
-                            <span id="mini-typing-text" class="block leading-tight">
+                            <span id="mini-typing-text" class="block leading-tight font-bold">
                                 ${currentStep === 2 ? "" : "Merry Christmas!"}
                             </span>
                         </div>
@@ -528,7 +537,7 @@
         function updateUILanguage() {
             const data = locales[currentLang];
             document.getElementById('tourTitle').innerText = data.title;
-            document.getElementById('tourSubtitle').innerText = data.subtitle;
+            resetSubtitleTypewriter();
             document.getElementById('footerCTA').innerText = data.callToAction;
             document.getElementById('btnStartPrompt').innerText = data.getStarted;
             
@@ -723,12 +732,166 @@
             }, 4500);
         }
 
+        // Subtitle Typewriter Loop
+        const subtitlePhrases = {
+            en: [
+                "Turn your special moments into beautiful digital Web pages",
+                "Craft high-fidelity dynamic gift pages"
+            ],
+            my: [
+                "သင့်ရင်ခုန်သံတွေကို လှပတဲ့ Web Page & QR ကုဒ်အဖြစ် ဖန်တီးလိုက်ပါ",
+                "ဒစ်ဂျစ်တယ်လက်ဆောင်များကို ကိုယ်တိုင်စိတ်ကြိုက်ဖန်တီးပါ"
+            ]
+        };
+        let subPhraseIndex = 0;
+        let subCharIndex = 0;
+        let subIsDeleting = false;
+        let subSpeed = 70;
+        let subTypewriterTimeout = null;
+
+        function getSubtitlePhrases() {
+            return subtitlePhrases[currentLang] || subtitlePhrases['en'];
+        }
+
+        function typeSubtitle() {
+            const phrases = getSubtitlePhrases();
+            if (subPhraseIndex >= phrases.length) subPhraseIndex = 0;
+            const currentPhrase = phrases[subPhraseIndex];
+            const textSpan = document.getElementById('subtitle-text');
+            if (!textSpan) return;
+
+            if (subIsDeleting) {
+                textSpan.innerText = currentPhrase.substring(0, subCharIndex - 1);
+                subCharIndex--;
+                subSpeed = 30; // deleting is faster
+            } else {
+                textSpan.innerText = currentPhrase.substring(0, subCharIndex + 1);
+                subCharIndex++;
+                subSpeed = 70; // standard typing speed
+            }
+
+            if (!subIsDeleting && subCharIndex === currentPhrase.length) {
+                subSpeed = 2500; // pause at completion
+                subIsDeleting = true;
+            } else if (subIsDeleting && subCharIndex === 0) {
+                subIsDeleting = false;
+                subPhraseIndex = (subPhraseIndex + 1) % phrases.length;
+                subSpeed = 500; // pause before starting next phrase
+            }
+
+            subTypewriterTimeout = setTimeout(typeSubtitle, subSpeed);
+        }
+
+        function resetSubtitleTypewriter() {
+            if (subTypewriterTimeout) {
+                clearTimeout(subTypewriterTimeout);
+            }
+            subPhraseIndex = 0;
+            subCharIndex = 0;
+            subIsDeleting = false;
+            subSpeed = 70;
+            const textSpan = document.getElementById('subtitle-text');
+            if (textSpan) textSpan.innerText = "";
+            typeSubtitle();
+        }
+
+        function initParticleBackground() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            let particles = [];
+            const particleCount = 65;
+            const connectionDistance = 110;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.45;
+                    this.vy = (Math.random() - 0.5) * 0.45;
+                    this.radius = Math.random() * 2 + 1.2;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                    
+                    if (this.x < 0) this.x = 0;
+                    if (this.x > canvas.width) this.x = canvas.width;
+                    if (this.y < 0) this.y = 0;
+                    if (this.y > canvas.height) this.y = canvas.height;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    const isDark = document.documentElement.classList.contains('dark');
+                    ctx.fillStyle = isDark ? 'rgba(129, 140, 248, 0.45)' : 'rgba(99, 102, 241, 0.3)';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const isDark = document.documentElement.classList.contains('dark');
+
+                // Update and draw particles
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+
+                // Connect particles close to each other
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < connectionDistance) {
+                            const alpha = (1 - dist / connectionDistance) * 0.15;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = isDark 
+                                ? `rgba(168, 85, 247, ${alpha})` // Purple
+                                : `rgba(99, 102, 241, ${alpha})`; // Indigo
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
         // Initialize Onboarding Page
         syncSettings();
         updateUILanguage();
         activeTemplateId = 'btn-index';
         setStep(1);
         startAutoShow();
+        initParticleBackground();
 
         // Continuous sync settings
         setInterval(syncSettings, 600);

@@ -219,6 +219,17 @@
         .eq-bar-4 { animation: eqBounce 1.0s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         .eq-bar-5 { animation: eqBounce 1.4s ease-in-out infinite; }
         
+        @keyframes gradient-rotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animated-gradient-border {
+            background: linear-gradient(270deg, #ff758f, #ff8fab, #4f46e5, #3b82f6, #ec4899, #ff758f);
+            background-size: 400% 400%;
+            animation: gradient-rotate 8s ease infinite;
+        }
+        
         /* Landing Mode styling states */
         body.landing-active nav {
             display: none !important;
@@ -310,40 +321,40 @@
 
     <!-- Mobile Navigation Panel with Scrollable categories -->
     <div class="lg:hidden bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md sticky top-[49px] z-30 px-3 py-2">
-        <div id="mobile-categories-scroll" class="flex overflow-x-auto no-scrollbar gap-1.5 pb-1 select-none">
-            <button id="mobile-btn-index" onclick="switchTemplateFile('lovecard.html', 'btn-index')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+        <div id="mobile-categories-scroll" class="flex flex-nowrap overflow-x-auto no-scrollbar gap-2.5 pb-1 select-none scroll-smooth">
+            <button id="mobile-btn-index" onclick="switchTemplateFile('lovecard.html', 'btn-index')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-500/15 text-pink-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-500/15 text-pink-500 text-[10px]"><i class="fa-solid fa-envelope"></i></span>
                 <span>Love Card</span>
             </button>
-            <button id="mobile-btn-cv" onclick="switchTemplateFile('cv.html', 'btn-cv')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-cv" onclick="switchTemplateFile('cv.html', 'btn-cv')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-rose-500/15 text-rose-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-rose-500/15 text-rose-500 text-[10px]"><i class="fa-solid fa-heart"></i></span>
                 <span>Will You Be Mine</span>
             </button>
-            <button id="mobile-btn-blog" onclick="switchTemplateFile('blog.html', 'btn-blog')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-blog" onclick="switchTemplateFile('blog.html', 'btn-blog')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-amber-500/15 text-amber-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-amber-500/15 text-amber-500 text-[10px]"><i class="fa-solid fa-gift"></i></span>
                 <span>Surprise Blog</span>
             </button>
-            <button id="mobile-btn-christmas" onclick="switchTemplateFile('christmas.html', 'btn-christmas')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-christmas" onclick="switchTemplateFile('christmas.html', 'btn-christmas')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-500 text-[10px]"><i class="fa-solid fa-tree"></i></span>
                 <span>Christmas</span>
             </button>
-            <button id="mobile-btn-anniversary" onclick="switchTemplateFile('anniversary.html', 'btn-anniversary')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-anniversary" onclick="switchTemplateFile('anniversary.html', 'btn-anniversary')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-purple-500/15 text-purple-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-purple-500/15 text-purple-500 text-[10px]"><i class="fa-solid fa-ring"></i></span>
                 <span>Anniversary</span>
             </button>
-            <button id="mobile-btn-birthday" onclick="switchTemplateFile('birthday.html', 'btn-birthday')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-birthday" onclick="switchTemplateFile('birthday.html', 'btn-birthday')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-yellow-500/15 text-yellow-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-yellow-500/15 text-yellow-500 text-[10px]"><i class="fa-solid fa-cake-candles"></i></span>
                 <span>Birthday</span>
             </button>
-            <button id="mobile-btn-mother" onclick="switchTemplateFile('mother.html', 'btn-mother')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-mother" onclick="switchTemplateFile('mother.html', 'btn-mother')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-400/15 text-pink-400 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-pink-400/15 text-pink-400 text-[10px]"><i class="fa-solid fa-person-breastfeeding"></i></span>
                 <span>Mother Day</span>
             </button>
-            <button id="mobile-btn-father" onclick="switchTemplateFile('father.html', 'btn-father')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-750 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-father" onclick="switchTemplateFile('father.html', 'btn-father')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-750 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-600/15 text-blue-600 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-600/15 text-blue-600 text-[10px]"><i class="fa-solid fa-user-tie"></i></span>
                 <span>Father Day</span>
             </button>
-            <button id="mobile-btn-friend" onclick="switchTemplateFile('friend.html', 'btn-friend')" class="mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-750 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
+            <button id="mobile-btn-friend" onclick="switchTemplateFile('friend.html', 'btn-friend')" class="mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-750 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm">
                 <span class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-sky-500/15 text-sky-500 text-[10px]" data-original-class="icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md bg-sky-500/15 text-sky-500 text-[10px]"><i class="fa-solid fa-user-group"></i></span>
                 <span>Friendship</span>
             </button>
@@ -351,7 +362,7 @@
     </div>
 
     <div class="flex-1 max-w-[1600px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-2">
-        <aside class="hidden lg:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 rounded-2xl lg:col-span-2 lg:order-3 space-y-3.5 lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px] overflow-y-auto">
+        <aside class="hidden lg:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 rounded-2xl lg:col-span-2 lg:order-3 space-y-3.5 lg:h-[82vh] lg:min-h-[620px] lg:max-h-[840px] overflow-y-auto">
             <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-400/80 mb-2.5 flex items-center gap-1.5 justify-center">Active Layouts</h2>
             <div class="space-y-2 font-sans" id="desktopTemplateList">
                 <div id="btn-index" onclick="switchTemplateFile('lovecard.html', 'btn-index')" class="template-card group relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 cursor-pointer flex items-center space-x-2.5 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-sm">
@@ -473,8 +484,8 @@
                 </div>
             </div>
         </aside>
-        <main id="previewColumn" class="col-span-1 lg:col-span-7 lg:order-1 flex flex-col items-center w-full lg:sticky lg:top-[100px] lg:self-start transition-all duration-300">
-            <div id="previewContainer" class="w-full border-0 bg-transparent shadow-none flex flex-col h-[520px] sm:h-[580px] lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px] relative transition-all duration-500">
+        <main id="previewColumn" class="col-span-1 lg:col-span-6 lg:order-1 flex flex-col items-center w-full lg:sticky lg:top-[100px] lg:self-start transition-all duration-300">
+            <div id="previewContainer" class="w-full border-0 bg-transparent shadow-none flex flex-col h-[600px] sm:h-[660px] lg:h-[82vh] lg:min-h-[620px] lg:max-h-[840px] relative transition-all duration-500">
                 <div id="previewHeaderBar" class="hidden bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 items-center justify-between z-10 select-none">
                     <div class="flex items-center space-x-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -497,8 +508,8 @@
                 </div>
             </div>
         </main>
-        <section id="modificationControlPanel" class="col-span-1 lg:col-span-3 lg:order-2 w-full transition-all duration-500">
-            <div id="controlPanelPlaceholder" class="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-6 h-[380px] sm:h-[480px] lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px] flex flex-col items-center justify-center text-center space-y-4 shadow-[0_12px_45px_rgba(99,102,241,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 transform">
+         <section id="modificationControlPanel" class="col-span-1 lg:col-span-4 lg:order-2 w-full transition-all duration-500">
+            <div id="controlPanelPlaceholder" class="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-6 h-[440px] sm:h-[520px] lg:h-[82vh] lg:min-h-[620px] lg:max-h-[840px] flex flex-col items-center justify-center text-center space-y-4 shadow-[0_12px_45px_rgba(99,102,241,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 transform">
                 <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 animate-bounce shadow-sm">
                     <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
                 </div>
@@ -512,9 +523,9 @@
             </div>
 
             <!-- Dynamic Studio UI -->
-            <div id="controlPanelContent" class="hidden opacity-0 scale-95 transition-all duration-300 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-250 dark:border-slate-800/80 shadow-[0_25px_60px_-15px_rgba(99,102,241,0.08)] dark:shadow-[0_40px_80px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col justify-between h-[440px] sm:h-[500px] lg:h-[76vh] lg:min-h-[520px] lg:max-h-[760px]">
+            <div id="controlPanelContent" class="hidden opacity-0 scale-95 transition-all duration-300 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-250 dark:border-slate-800/80 shadow-[0_25px_60px_-15px_rgba(99,102,241,0.08)] dark:shadow-[0_40px_80px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col justify-between h-[540px] sm:h-[620px] lg:h-[82vh] lg:min-h-[620px] lg:max-h-[840px]">
                 <div class="flex-1 flex flex-col min-h-0">
-                    <div class="bg-gradient-to-r from-indigo-500/10 to-blue-500/10 px-4 py-3 border-b border-slate-200/40 dark:border-slate-800/60 flex items-center justify-between">
+                    <div class="shrink-0 bg-gradient-to-r from-indigo-500/10 to-blue-500/10 px-4 py-3 border-b border-slate-200/40 dark:border-slate-800/60 flex items-center justify-between">
                         <span id="customizeStudioTitle" class="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
                             <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Customize Studio
                         </span>
@@ -528,7 +539,7 @@
                         </div>
                     </div>
 
-                    <div class="p-1 px-1.5 bg-slate-100/60 dark:bg-slate-950/40 rounded-2xl flex gap-1.5 mx-4 my-3.5 border border-slate-200/20 dark:border-slate-800/40 backdrop-blur-md">
+                    <div class="shrink-0 p-1 px-1.5 bg-slate-100/60 dark:bg-slate-950/40 rounded-2xl flex gap-1.5 mx-4 my-3.5 border border-slate-200/20 dark:border-slate-800/40 backdrop-blur-md">
                         <button onclick="switchStudioTab('content')" id="tabBtn-content" class="flex-1 py-2.5 rounded-xl text-center text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 shadow-[0_4px_12px_rgba(99,102,241,0.08)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-800/60 focus:outline-none transition-all duration-300">
                             <i class="fa-solid fa-file-pen mr-1"></i> <span id="tabLabel-content">Content</span>
                         </button>
@@ -537,9 +548,9 @@
                         </button>
                     </div>
 
-                    <div class="p-4 flex-1 overflow-y-auto min-h-0 space-y-4 no-scrollbar">
-                        <div id="tabPanel-content" class="space-y-4">
-                            <div id="dynamicFormContainer" class="space-y-4"></div>
+                    <div class="p-5 sm:p-6 flex-1 overflow-y-auto min-h-0 space-y-5 sm:space-y-6">
+                        <div id="tabPanel-content" class="space-y-5 sm:space-y-6">
+                            <div id="dynamicFormContainer" class="space-y-5 sm:space-y-6"></div>
                         </div>
 
                         <div id="tabPanel-magic" class="hidden space-y-5 animate-in fade-in duration-200">
@@ -642,7 +653,7 @@
                     </div>
                 </div>
 
-                <div class="p-4 border-t border-slate-150/40 dark:border-slate-800/60 bg-white/40 dark:bg-slate-950/30 backdrop-blur-md">
+                <div class="shrink-0 p-4 border-t border-slate-150/40 dark:border-slate-800/60 bg-white/40 dark:bg-slate-950/30 backdrop-blur-md">
                     <button id="deployBtn" onclick="generateVercelNativeRouteLink()" class="w-full relative group overflow-hidden bg-slate-950 dark:bg-indigo-600 text-white font-extrabold py-3 px-5 rounded-xl transition-all active:scale-95 text-[9px] uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-indigo-600/10 dark:shadow-indigo-600/20 hover:shadow-indigo-600/25 active:shadow-none animate-in fade-in slide-in-from-bottom-2 duration-300 font-sans">
                         <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <i class="fa-solid fa-wand-magic-sparkles relative z-10 animate-pulse text-[10px]"></i>
@@ -902,6 +913,7 @@
             </div>
         </div>
     </div>
+    <script src="audio-helper.js"></script>
     <script src="editor.js"></script>
 </body>
 </html>

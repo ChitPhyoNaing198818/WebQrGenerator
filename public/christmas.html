@@ -22,6 +22,7 @@
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes cardOpen { 0% { opacity: 0; transform: translate(-50%, -40%) scale(0.9); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
     </style>
+    <script src="/audio-helper.js"></script>
 </head>
 <body>
     <canvas id="particles"></canvas>
@@ -133,5 +134,6 @@
         }
         window.addEventListener('resize', initParticles); initParticles(); drawParticles();
     </script>
+    <script src="/surprise-extra.js"></script>
 </body>
 </html>

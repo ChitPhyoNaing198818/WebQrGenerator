@@ -20,6 +20,7 @@
         .heart-particle { position: absolute; pointer-events: none; animation: heartFloat 8s linear infinite; color: #fb7185; }
         .gradient-text { background: linear-gradient(45deg, #be123c, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
+    <script src="/audio-helper.js"></script>
 </head>
 <body class="overflow-hidden select-none m-0 p-0">
     <div id="particle-container" class="fixed inset-0 pointer-events-none z-10"></div>
@@ -219,5 +220,6 @@
           try { applyUpdate(JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(decodeURIComponent(urlP.get('studio_payload'))), c => c.charCodeAt(0))))); } catch(e) {}
         }
     </script>
+    <script src="/surprise-extra.js"></script>
 </body>
 </html>

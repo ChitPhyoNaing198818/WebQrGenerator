@@ -43,6 +43,7 @@
         .heart-float { position: absolute; pointer-events: none; animation: moveUp 6s linear forwards; z-index: 50; }
         @keyframes moveUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: 0.8; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
     </style>
+    <script src="/audio-helper.js"></script>
 </head>
 <body>
     <div id="overlay" onclick="start()">မင်းအတွက် ကိုယ်Supriseတစ်ခုလုပ်ပေးထားတယ် သိချင်ရင်နှိပ်ကြည့်လိုက်နော် </div>
@@ -159,5 +160,6 @@
         function moveNo() { const noBtn = document.getElementById('no-btn'); noBtn.style.transform = `translate(${Math.random() * 160 - 80}px, ${Math.random() * 80 - 40}px)`; }
         function sayYes() { document.getElementById('q-text').innerHTML = successResponseText; document.getElementById('yes-btn').style.display = 'none'; document.getElementById('no-btn').style.display = 'none'; }
     </script>
+    <script src="/surprise-extra.js"></script>
 </body>
 </html>

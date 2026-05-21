@@ -3,120 +3,1180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Surprise</title>
+    <title>Happy Birthday, My Dearest! ✨💖</title>
+    <!-- Tailwind CSS for modern & elegant styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter for UI, Dancing Script & Caveat for handwritten romantic vibes, Pyidaungsu/Noto Sans for beautiful Myanmar unicode -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600&family=Caveat:wght@500;700&family=Cinzel:wght@400;600;700&family=Noto+Sans+Myanmar:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for elegant icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for stunning 3D scene -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Tone.js for premium web audio synth birthday music -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
     <style>
-        body { font-family: 'Quicksand', sans-serif; background: #fff5f5; overflow-x: hidden; }
-        .font-playfair { font-family: 'Playfair Display', serif; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .floating { animation: floating 3s ease-in-out infinite; }
-        @keyframes floating {
+        body {
+            font-family: 'Inter', 'Noto Sans Myanmar', sans-serif;
+            overflow-x: hidden;
+            background: radial-gradient(circle at center, #2c1a1d 0%, #160a0c 100%);
+        }
+        .romantic-font {
+            font-family: 'Dancing Script', 'Noto Sans Myanmar', cursive;
+        }
+        .handwritten-font {
+            font-family: 'Caveat', 'Noto Sans Myanmar', cursive;
+        }
+        .royal-font {
+            font-family: 'Cinzel', serif;
+        }
+        
+        /* Floating Heart particles (gently falling neon pink elements) */
+        @keyframes floatHeart {
+            0% { transform: translateY(-5vh) scale(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(105vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+        .falling-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 5;
+            animation: floatHeart 12s linear infinite;
+        }
+
+        /* Ambient floating hearts rising up */
+        @keyframes riseHeart {
+            0% { transform: translateY(105vh) scale(0) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.5) rotate(180deg); opacity: 0; }
+        }
+        .rising-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 5;
+            animation: riseHeart 8s linear infinite;
+        }
+
+        /* Luxury gold pulse and glow */
+        .royal-glow {
+            animation: borderGlow 3s infinite ease-in-out;
+        }
+        @keyframes borderGlow {
+            0%, 100% { 
+                box-shadow: 0 0 15px rgba(245, 158, 11, 0.2), inset 0 0 15px rgba(245, 158, 11, 0.1);
+                border-color: rgba(245, 158, 11, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), inset 0 0 25px rgba(245, 158, 11, 0.2);
+                border-color: rgba(245, 158, 11, 0.6);
+            }
+        }
+
+        .animate-float-letter {
+            animation: floatLetter 5s ease-in-out infinite;
+        }
+        @keyframes floatLetter {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(2deg); }
+            50% { transform: translateY(-12px) rotate(1deg); }
         }
-        .shimmer {
-            background: linear-gradient(90deg, #f8bbd0 0%, #fff 50%, #f8bbd0 100%);
-            background-size: 200% 100%;
-            animation: shimmer 2s linear infinite;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        /* Staggered Paragraph Fade-In with a slide up */
+        .letter-para {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-        .sparkle { position: absolute; pointer-events: none; animation: sparkleAnim 1.5s linear forwards; }
-        @keyframes sparkleAnim { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+        .letter-para.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Neon Scanner Radar Lines & Scanning Effect */
+        @keyframes laserSweep {
+            0%, 100% { top: 0%; opacity: 0.8; }
+            50% { top: 100%; opacity: 0.8; }
+        }
+        .scanner-laser {
+            animation: laserSweep 3s infinite ease-in-out;
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { filter: drop-shadow(0 0 3px rgba(236, 72, 153, 0.6)) drop-shadow(0 0 8px rgba(236, 72, 153, 0.3)); }
+            50% { filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.9)) drop-shadow(0 0 20px rgba(236, 72, 153, 0.6)); }
+        }
+        .neon-glow-pink {
+            animation: neonPulse 2s infinite ease-in-out;
+        }
+
+        /* BIRTHDAY BALLOONS FLOATING ANIMATION EFFECTS */
+        @keyframes floatBalloon {
+            0% {
+                transform: translateY(115vh) translateX(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) translateX(30px) scale(1.05) rotate(8deg);
+            }
+            100% {
+                transform: translateY(-25vh) translateX(-20px) scale(0.95) rotate(-8deg);
+                opacity: 0;
+            }
+        }
+        .balloon {
+            position: fixed;
+            bottom: -150px;
+            z-index: 100;
+            pointer-events: none;
+            animation: floatBalloon 8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .balloon-body {
+            width: 55px;
+            height: 70px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            position: relative;
+            box-shadow: inset -5px -10px 15px rgba(0,0,0,0.15), 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .balloon-body::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 12px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: rotate(-30deg);
+        }
+        .balloon-knot {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 8px solid;
+            position: absolute;
+            bottom: -2px;
+            left: calc(50% - 6px);
+        }
+        .balloon-string {
+            width: 1px;
+            height: 75px;
+            background: rgba(255, 255, 255, 0.4);
+            position: absolute;
+            bottom: -75px;
+            left: 50%;
+            transform-origin: top center;
+            animation: stringSway 1.5s ease-in-out infinite alternate;
+        }
+        @keyframes stringSway {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-center items-center p-4">
-    <audio id="bgMusic" loop></audio>
-    
-    <div id="main-card" class="glass rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-10 max-w-sm w-full text-center space-y-8 transform animate__animated animate__fadeInUp relative overflow-hidden">
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-pink-200 rounded-full blur-3xl opacity-30"></div>
-        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-200 rounded-full blur-3xl opacity-30"></div>
+<body class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-neutral-100 p-2 md:p-4 selection:bg-pink-500/30">
+
+    <!-- Background Sparkles / Stars overlay -->
+    <div id="sparkle-container" class="absolute inset-0 pointer-events-none z-10"></div>
+
+    <!-- SCREEN 1: FUTURISTIC ROMANTIC BIOMETRICS SECURITY INTERFACE -->
+    <div id="intro-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 text-center transition-all duration-1000 bg-[#0c0406] overflow-hidden">
         
-        <div id="bday-image-container" class="w-40 h-40 mx-auto rounded-full border-8 border-white overflow-hidden shadow-2xl floating relative z-10">
-            <img id="bday-image" src="https://images.unsplash.com/photo-1530103862676-fa8c913a96cd?auto=format&fit=crop&q=80&w=400" alt="Birthday" class="w-full h-full object-cover">
+        <!-- Animated Background Tech Accents -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-pink-950/20 via-neutral-950 to-neutral-950 opacity-90"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+
+        <!-- Main Scanning Panel Structure -->
+        <div class="relative w-full max-w-md bg-neutral-900/45 backdrop-blur-2xl border border-pink-500/20 p-8 rounded-[2.5rem] shadow-[0_0_50px_rgba(236,72,153,0.1)] flex flex-col items-center justify-center transition-all duration-500 hover:border-pink-500/40 z-10">
+            
+            <!-- Floating Decorative Rings -->
+            <div class="absolute -top-12 -left-12 w-48 h-48 bg-pink-500/5 rounded-full filter blur-xl animate-pulse"></div>
+            <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-amber-500/5 rounded-full filter blur-xl animate-pulse delay-700"></div>
+
+            <!-- Tech System Status Header -->
+            <div class="flex items-center gap-2 mb-2 text-[10px] tracking-[0.3em] font-extrabold text-pink-400/90 uppercase royal-font">
+                <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+                Secure Love Vault System
+            </div>
+            
+            <h1 class="romantic-font text-3xl md:text-4xl text-neutral-100 font-bold mb-8">Hello, My Dearest Princess 💖</h1>
+
+            <!-- Interactive Heart Fingerprint scanner hub -->
+            <div class="relative w-44 h-44 rounded-full flex items-center justify-center bg-neutral-950/60 border border-neutral-800 shadow-inner group/scanner p-1 cursor-pointer select-none" id="scanner-pad">
+                
+                <!-- Inner rotating circular tracking grids -->
+                <div class="absolute inset-0 rounded-full border border-dashed border-pink-500/20 animate-[spin_40s_linear_infinite]"></div>
+                <div class="absolute inset-3 rounded-full border border-dashed border-pink-500/40 animate-[spin_20s_linear_infinite_reverse]"></div>
+                <div class="absolute inset-5 rounded-full border border-pink-500/10"></div>
+                
+                <!-- Active neon scanner sweep bar -->
+                <div id="scanner-laser" class="hidden absolute left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-pink-400 to-transparent shadow-[0_0_12px_#ec4899] scanner-laser z-20 pointer-events-none"></div>
+
+                <!-- Pink Heart Vector Icon / Fingerprint Target Zone -->
+                <div class="z-10 neon-glow-pink transform transition-all duration-500 scale-100 active:scale-95 text-pink-500 group-hover/scanner:scale-105" id="scanner-core">
+                    <svg viewBox="0 0 100 100" class="w-20 h-20 fill-current">
+                        <!-- Custom vector style biometrics patterns merged inside heart -->
+                        <path d="M50 84.4c-1.3 0-2.6-.5-3.6-1.5C31.2 68.3 20 57.3 14.1 48.9 9.3 42 7 35.5 7 29.3c0-11.2 8.7-20.3 19.3-20.3 6.1 0 11.7 3 15.3 8 2.6-3.6 6.5-6 10.9-7.3 1-.3 2.1-.5 3.1-.5 10.6 0 19.3 9.1 19.3 20.3 0 6.2-2.3 12.7-7.1 19.6C72 58.4 62.1 68.9 46.1 82.9c-1 1-2.3 1.5-3.6 1.5h7.5z"/>
+                        <path d="M50 72c-1.2-1.3-4.5-4-9-8.4-10-9.6-17.5-17.5-20.8-23.4-3.5-6.1-5.2-11.3-5.2-15.6 0-8 6.2-14.6 14-14.6 5.6 0 10.5 3.3 12.8 8.6l2.2 5 2.2-5C48.5 13.3 53.4 10 59 10c7.8 0 14 6.6 14 14.6 0 4.3-1.7 9.5-5.2 15.6-3.3 5.9-10.8 13.8-20.8 23.4-4.5 4.4-7.8 7.1-9 8.4z" class="text-neutral-950"/>
+                        <!-- Fingerprint Biometric Rib Ribs -->
+                        <path d="M50 25c-5.5 0-10 4.5-10 10 0 .6.4 1 1 1s1-.4 1-1c0-4.4 3.6-8 8-8s8 3.6 8 8c0 3.3-2.7 6-6 6-.6 0-1 .4-1 1v6c0 .6.4 1 1 1s1-.4 1-1v-5c2.2 0 4-1.8 4-4 0-5.5-4.5-10-10-10z" class="text-pink-400" stroke-width="2"/>
+                        <path d="M50 17c-9.9 0-18 8.1-18 18 0 .6.4 1 1 1s1-.4 1-1c0-8.8 7.2-16 16-16s16 7.2 16 16c0 6.6-5.4 12-12 12-.6 0-1 .4-1 1v4c0 .6.4 1 1 1s1-.4 1-1v-3c5.5 0 10-4.5 10-10 0-9.9-8.1-18-18-18z" class="text-pink-300" stroke-width="1"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Loading Percentage & Prompt -->
+            <div class="mt-8 text-center space-y-3 w-full">
+                <div id="scan-percentage" class="text-3xl font-extrabold text-pink-400 royal-font tracking-widest hidden">00%</div>
+                <div id="scan-instruction" class="text-sm font-medium tracking-wider text-neutral-300/90 leading-relaxed max-w-[280px] mx-auto select-none">
+                    Press & Hold Heart to Scan <br>
+                    <span class="text-xs text-pink-400/80 font-bold tracking-widest uppercase mt-1 inline-block">Unlock Our Memories ⚡️💖</span>
+                </div>
+                
+                <!-- Micro Console Log Messages for immersion -->
+                <div id="scan-terminal" class="text-[10px] text-neutral-500 font-mono h-4 overflow-hidden select-none">SYSTEM READY: WAITING FOR BIOMETRICS</div>
+            </div>
+            
+            <!-- Circular Loading Outline Sweep (Controlled with JS) -->
+            <div class="absolute bottom-6 flex gap-1.5">
+                <div class="w-1.5 h-1.5 rounded-full bg-pink-500/30" id="dot-1"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-pink-500/30" id="dot-2"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-pink-500/30" id="dot-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: THE MAGIC STAGE (LOVE TIMELINE & Surprises) -->
+    <div id="main-stage" class="hidden w-full max-w-6xl mx-auto px-2 md:px-4 py-4 md:py-8 flex flex-col items-center justify-center z-20 min-h-screen">
+        
+        <!-- Header Text -->
+        <div class="text-center mb-2 md:mb-4 z-30 pointer-events-none px-2">
+            <h2 id="stage-title" class="text-2xl md:text-4xl lg:text-5xl font-bold text-amber-100 tracking-tight transition-all duration-700 romantic-font">
+                လက်ဆောင်ဗူးလေးကို နှိပ်ပြီး ဖွင့်လိုက်ပါဦး ✨
+            </h2>
+            <p id="stage-subtitle" class="text-amber-300/80 mt-1 md:mt-2 text-xs md:text-sm font-medium tracking-wide">
+                Something magical is waiting inside for you...
+            </p>
         </div>
 
-        <div class="space-y-4 relative z-10">
-            <h1 id="bday-name" class="text-4xl font-playfair shimmer font-bold tracking-tight">Happy Birthday!</h1>
-            <p id="bday-message" class="text-slate-600 text-sm leading-relaxed italic">May your day be as wonderful and bright as you are! Wishing you all the happiness in the world.</p>
+        <!-- MAIN WRAPPER (Fully Responsive layout) -->
+        <div id="stage-content-wrapper" class="w-full flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-8 transition-all duration-1000 max-w-5xl">
+            
+            <!-- 3D Gift Box & Cake Canvas Container -->
+            <div class="relative w-full max-w-md h-[340px] md:h-[480px] flex flex-col items-center justify-center z-30">
+                <div id="canvas-3d" class="w-full h-full cursor-pointer"></div>
+                
+                <!-- Dynamic Prompt Indicator -->
+                <div id="box-instruction" class="absolute bottom-4 md:bottom-6 bg-[#160a0c]/80 backdrop-blur-md border border-amber-400/30 text-amber-300 px-4 py-2 rounded-full shadow-md text-xs md:text-sm font-semibold tracking-wider flex items-center gap-2 pointer-events-none animate-pulse">
+                    <i class="fa-solid fa-hand-pointer"></i> ဖွင့်ရန် ဗူးကိုနှိပ်ပါ
+                </div>
+
+                <!-- Interactive Blow Candle Button -->
+                <button id="btn-blow" class="hidden mt-2 md:mt-4 px-6 md:px-8 py-2.5 md:py-3 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#160a0c] font-extrabold rounded-full shadow-xl transform transition-all hover:scale-105 active:scale-95 flex items-center gap-2 z-40 text-xs md:text-sm royal-font border border-amber-200/50">
+                    <i class="fa-solid fa-wind animate-pulse"></i> Blow Out Candles! 🎂💨
+                </button>
+            </div>
+
+            <!-- Right Side: The Love Letter Card (Burmese Language Card) -->
+            <div id="love-letter-container" class="hidden opacity-0 transform translate-y-10 flex-1 w-full max-w-md bg-[#221013]/90 backdrop-blur-xl border border-amber-500/20 p-5 md:p-8 rounded-3xl shadow-2xl relative overflow-hidden transition-all duration-1000 royal-glow">
+                <!-- Golden Corner Decor in Letter -->
+                <div class="absolute top-3 left-3 w-4 h-4 border-t border-l border-amber-500/40"></div>
+                <div class="absolute top-3 right-3 w-4 h-4 border-t border-r border-amber-500/40"></div>
+                <div class="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-amber-500/40"></div>
+                <div class="absolute bottom-3 right-3 w-4 h-4 border-b border-r border-amber-500/40"></div>
+                
+                <h3 id="letter-header" class="text-2xl md:text-3xl font-bold text-amber-200 romantic-font border-b border-amber-500/20 pb-2 md:pb-3 flex items-center justify-between">
+                    မောင့်ရဲ့ အချစ်ဆုံးလေးရေ... 💖
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-lg md:text-xl animate-pulse"></i>
+                </h3>
+                
+                <div id="letter-body" class="mt-4 md:mt-6 text-amber-100/90 leading-relaxed space-y-3 md:space-y-4 text-base md:text-lg tracking-wide max-h-[240px] md:max-h-[300px] overflow-y-auto pr-2">
+                    <p class="letter-para">
+                        ဒီနေ့လို ထူးခြားလှပတဲ့ မွေးနေ့ရက်မြတ်လေးမှာ မောင် ချစ်ရတဲ့သူလေး တစ်သက်လုံး စိတ်ချမ်းသာ၊ ကိုယ်ကျန်းမာနဲ့ အလိုချင်ဆုံး ဆုတောင်းတွေအားလုံး ပြည့်ဝပါစေလို့ မောင် ဆုတောင်းပေးပါတယ်ဗျာ။ ✨
+                    </p>
+                    <p class="letter-para">
+                        မောင့်ရဲ့ဘဝထဲကို ရောက်လာပေးပြီး နေ့ရက်တိုင်းကို အဓိပ္ပာယ်ရှိလှပအောင် အဖော်မွန်ပြုပေးခဲ့တဲ့အတွက်လည်း ကျေးဇူးအများကြီး တင်ပါတယ် ချစ်လေး။
+                    </p>
+                    <p class="letter-para">
+                        နောင်နှစ်ပေါင်းများစွာတိုင်အောင် မောင်တို့နှစ်ယောက် တစ်ယောက်လက်ကိုတစ်ယောက် မြဲမြဲဆုပ်ကိုင်ထားပြီး မင်းလေးအနားမှာ အမြဲတမ်းကာကွယ်ပေးမယ့် အားကိုးရသူတစ်ယောက်အဖြစ် ရှိနေပေးပါမယ်နော်။ 🥂💕
+                    </p>
+                    <p class="letter-para text-right text-amber-400 font-bold mt-2 md:mt-4 romantic-font text-xl md:text-2xl">
+                        မင်းကို အမြဲတမ်းချစ်နေမယ့်... <br>
+                        မောင်
+                    </p>
+                </div>
+            </div>
         </div>
 
-        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-[2rem] border border-white shadow-sm relative z-10 group cursor-pointer active:scale-95 transition-transform" onclick="createSparkles(event)">
-            <p id="bday-wish" class="text-pink-600 font-bold text-lg tracking-wide">❤️ Click for a Wish ❤️</p>
-            <div id="selected-emoji" class="text-6xl mt-4 inline-block drop-shadow-md">🎂</div>
-            <p class="text-[10px] uppercase tracking-widest text-pink-300 mt-2 font-bold opacity-0 group-hover:opacity-100 transition-opacity">Sparkle!</p>
+        <!-- Custom Audio Player Control Overlay -->
+        <div id="audio-control" class="hidden fixed bottom-4 right-4 md:bottom-6 md:right-6 bg-[#221013]/85 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-amber-500/20 shadow-md flex items-center gap-2 md:gap-3 z-50 transition-all text-xs">
+            <button id="btn-audio-toggle" class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-amber-500 text-[#160a0c] flex items-center justify-center shadow-sm hover:scale-105 transition-transform">
+                <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+            </button>
+            <span class="font-semibold text-amber-200 tracking-wider">Birthday Lofi Melodies</span>
         </div>
     </div>
 
     <script>
+        // DOM Elements
+        const introScreen = document.getElementById('intro-screen');
+        const mainStage = document.getElementById('main-stage');
+        const stageTitle = document.getElementById('stage-title');
+        const stageSubtitle = document.getElementById('stage-subtitle');
+        const canvas3DContainer = document.getElementById('canvas-3d');
+        const boxInstruction = document.getElementById('box-instruction');
+        const loveLetterContainer = document.getElementById('love-letter-container');
+        const btnBlow = document.getElementById('btn-blow');
+        const audioControl = document.getElementById('audio-control');
+        const btnAudioToggle = document.getElementById('btn-audio-toggle');
+        const audioIcon = document.getElementById('audio-icon');
+
+        // Biometrics Interactive Scanner elements
+        const scannerPad = document.getElementById('scanner-pad');
+        const scannerCore = document.getElementById('scanner-core');
+        const scannerLaser = document.getElementById('scanner-laser');
+        const scanPercentageText = document.getElementById('scan-percentage');
+        const scanInstructionText = document.getElementById('scan-instruction');
+        const scanTerminalLog = document.getElementById('scan-terminal');
+
+        // Dynamic State Storage Configuration for customize panel integration
         const SCHEMA = [
-            { id: "bday_name", label: "Celebrant Name", type: "text", defaultValue: "Happy Birthday!" },
-            { id: "bday_message", label: "Special Message", type: "textarea", defaultValue: "May your day be as wonderful and bright as you are! Wishing you all the happiness in the world." },
-            { id: "bday_image", label: "Profile Photo", type: "image", defaultValue: "https://images.unsplash.com/photo-1530103862676-fa8c913a96cd?auto=format&fit=crop&q=80&w=400" },
-            { id: "bday_wish", label: "Bottom Wish", type: "text", defaultValue: "❤️ Make a wish! ❤️" },
-            { id: "bday_emoji", label: "Celebration Emoji", type: "select", defaultValue: "🎂", options: ["🎂", "🎈", "🎁", "🎉", "🍰", "🍭", "🍦"] },
-            { id: "bg_color", label: "Background Color", type: "color", defaultValue: "#fff5f5" },
-            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://assets.mixkit.co/active_storage/sfx/123/123.wav" }
+            { id: "intro_title", label: "Intro Screen Title", type: "text", defaultValue: "Hello, My Dearest Princess 💖" },
+            { id: "stage_title", label: "Stage Header Prompt", type: "text", defaultValue: "လက်ဆောင်ဗူးလေးကို နှိပ်ပြီး ဖွင့်လိုက်ပါဦး ✨" },
+            { id: "bday_title", label: "Letter Header Title", type: "text", defaultValue: "မောင့်ရဲ့ အချစ်ဆုံးလေးရေ... 💖" },
+            { id: "bday_para1", label: "Message Paragraph 1", type: "textarea", defaultValue: "ဒီနေ့လို ထူးခြားလှပတဲ့ မွေးနေ့ရက်မြတ်လေးမှာ မောင် ချစ်ရတဲ့သူလေး တစ်သက်လုံး စိတ်ချမ်းသာ၊ ကိုယ်ကျန်းမာနဲ့ အလိုချင်ဆုံး ဆုတောင်းတွေအားလုံး ပြည့်ဝပါစေလို့ မောင် ဆုတောင်းပေးပါတယ်ဗျာ။ ✨" },
+            { id: "bday_para2", label: "Message Paragraph 2", type: "textarea", defaultValue: "မောင့်ရဲ့ဘဝထဲကို ရောက်လာပေးပြီး နေ့ရက်တိုင်းကို အဓိပ္ပာယ်ရှိလှပအောင် အဖော်မွန်ပြုပေးခဲ့တဲ့အတွက်လည်း ကျေးဇူးအများကြီး တင်ပါတယ် ချစ်လေး။" },
+            { id: "bday_para3", label: "Message Paragraph 3", type: "textarea", defaultValue: "နောင်နှစ်ပေါင်းများစွာတိုင်အောင် မောင်တို့နှစ်ယောက် တစ်ယောက်လက်ကိုတစ်ယောက် မြဲမြဲဆုပ်ကိုင်ထားပြီး မင်းလေးအနားမှာ အမြဲတမ်းကာကွယ်ပေးမယ့် အားကိုးရသူတစ်ယောက်အဖြစ် ရှိနေပေးပါမယ်နော်။ 🥂💕" },
+            { id: "bday_sender", label: "Sender/Signature Text", type: "text", defaultValue: "မောင်" }
         ];
 
-        function createSparkles(e) {
-            for(let i=0; i<12; i++) {
-                const s = document.createElement('div');
-                s.innerHTML = '✨';
-                s.className = 'sparkle text-xl';
-                s.style.left = (e.pageX + (Math.random() - 0.5) * 100) + 'px';
-                s.style.top = (e.pageY + (Math.random() - 0.5) * 100) + 'px';
-                document.body.appendChild(s);
-                setTimeout(() => s.remove(), 1500);
+        // State variables
+        let scene, camera, renderer, giftGroup, lidGroup, bottomGroup, cakeGroup;
+        let isBoxOpened = false;
+        let areCandlesBlown = false;
+        let ambientMusicSynth = null;
+        let accompanimentSynth = null;
+        let playMelodyLoop = null;
+        let isAudioPlaying = false;
+        let hoverAnimationTime = 0;
+        let candleFlames = []; // Store flame references to animate and extinguish
+        let candleLights = []; // Dynamic warm lights emitted from candle flames
+        let cameraTarget;      // Dynamic target for camera to look at
+        
+        // Scanner State Timers
+        let holdTimer = null;
+        let scanProgress = 0;
+        let isFullyScanned = false;
+
+        // Generate Happy Birthday Song melody using Tone.js Synth Engine
+        function initMusic() {
+            if (ambientMusicSynth) return; // Guard against multiple configurations
+
+            ambientMusicSynth = new Tone.MonoSynth({
+                oscillator: { type: "sine" },
+                envelope: {
+                    attack: 0.1,
+                    decay: 0.2,
+                    sustain: 0.9,
+                    release: 1.2
+                }
+            }).toDestination();
+            ambientMusicSynth.volume.value = -10;
+
+            accompanimentSynth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "triangle" },
+                envelope: {
+                    attack: 0.15,
+                    decay: 0.4,
+                    sustain: 0.6,
+                    release: 2.0
+                }
+            }).toDestination();
+            accompanimentSynth.volume.value = -18;
+
+            const delay = new Tone.FeedbackDelay("8n", 0.45).toDestination();
+            ambientMusicSynth.connect(delay);
+            accompanimentSynth.connect(delay);
+
+            const melodyNotes = [
+                { note: "G4", time: "0:0:0", duration: "8n." },
+                { note: "G4", time: "0:0:1.5", duration: "16n" },
+                { note: "A4", time: "0:1:0", duration: "4n" },
+                { note: "G4", time: "0:2:0", duration: "4n" },
+                { note: "C5", time: "1:0:0", duration: "4n" },
+                { note: "B4", time: "1:1:0", duration: "2n" },
+
+                { note: "G4", time: "2:0:0", duration: "8n." },
+                { note: "G4", time: "2:0:1.5", duration: "16n" },
+                { note: "A4", time: "2:1:0", duration: "4n" },
+                { note: "G4", time: "2:2:0", duration: "4n" },
+                { note: "D5", time: "3:0:0", duration: "4n" },
+                { note: "C5", time: "3:1:0", duration: "2n" },
+
+                { note: "G4", time: "4:0:0", duration: "8n." },
+                { note: "G4", time: "4:0:1.5", duration: "16n" },
+                { note: "G5", time: "4:1:0", duration: "4n" },
+                { note: "E5", time: "4:2:0", duration: "4n" },
+                { note: "C5", time: "5:0:0", duration: "4n" },
+                { note: "B4", time: "5:1:0", duration: "4n" },
+                { note: "A4", time: "5:2:0", duration: "2n" },
+
+                { note: "F5", time: "6:0:0", duration: "8n." },
+                { note: "F5", time: "6:0:1.5", duration: "16n" },
+                { note: "E5", time: "6:1:0", duration: "4n" },
+                { note: "C5", time: "6:2:0", duration: "4n" },
+                { note: "D5", time: "7:0:0", duration: "4n" },
+                { note: "C5", time: "7:1:0", duration: "2n" }
+            ];
+
+            const chordNotes = [
+                { notes: ["C3", "E3", "G3"], time: "0:0:0", duration: "2n." },
+                { notes: ["G2", "D3", "B3"], time: "1:0:0", duration: "2n." },
+                { notes: ["G2", "D3", "F3"], time: "2:0:0", duration: "2n." },
+                { notes: ["C3", "E3", "G3"], time: "3:0:0", duration: "2n." },
+                { notes: ["C3", "E3", "C4"], time: "4:0:0", duration: "2n." },
+                { notes: ["F2", "C3", "A3"], time: "5:0:0", duration: "2n." },
+                { notes: ["C3", "F3", "A3"], time: "6:0:0", duration: "2n." },
+                { notes: ["G2", "D3", "B3"], time: "7:0:0", duration: "4n" },
+                { notes: ["C3", "E3", "G3"], time: "7:1:0", duration: "2n" }
+            ];
+
+            const melodyPart = new Tone.Part((time, val) => {
+                ambientMusicSynth.triggerAttackRelease(val.note, val.duration, time);
+            }, melodyNotes);
+
+            const chordPart = new Tone.Part((time, val) => {
+                accompanimentSynth.triggerAttackRelease(val.notes, val.duration, time);
+            }, chordNotes);
+
+            melodyPart.loop = true;
+            melodyPart.loopEnd = "8:0";
+            chordPart.loop = true;
+            chordPart.loopEnd = "8:0";
+
+            playMelodyLoop = () => {
+                Tone.start();
+                Tone.Transport.bpm.value = 115;
+                Tone.Transport.start();
+                melodyPart.start(0);
+                chordPart.start(0);
+                isAudioPlaying = true;
+                audioIcon.className = "fa-solid fa-volume-high";
+            };
+        }
+
+        function playMusic() {
+            if (playMelodyLoop) {
+                playMelodyLoop();
             }
         }
 
+        function toggleAudio() {
+            if (isAudioPlaying) {
+                Tone.Transport.pause();
+                audioIcon.className = "fa-solid fa-volume-xmark";
+                isAudioPlaying = false;
+            } else {
+                Tone.start();
+                Tone.Transport.start();
+                audioIcon.className = "fa-solid fa-volume-high";
+                isAudioPlaying = true;
+            }
+        }
+
+        btnAudioToggle.addEventListener('click', toggleAudio);
+
+        /* =========================================================================
+           BIOMETRIC SCANNERS (GENTLE PRESSURE & HOLD) GESTURE LOGIC
+           ========================================================================= */
+
+        const terminalLogs = [
+            "READING THUMBPRINT BIOMETRICS...",
+            "CONTACT SECURED: READING CAPACITANCE...",
+            "DECRYPTING MEMORY CORES...",
+            "ACCESS MATCH: DEAREST PRINCESS FOUND...",
+            "INITIALIZING SURPRISE.EXE...",
+            "MEMORIES UNLOCKED SUCCESSFULLY!"
+        ];
+
+        function startScanning(e) {
+            if (isFullyScanned) return;
+            e.preventDefault();
+
+            // Visual feedback
+            scannerLaser.classList.remove('hidden');
+            scanPercentageText.classList.remove('hidden');
+            scannerCore.classList.add('scale-110', 'text-pink-400');
+            scannerPad.classList.add('border-pink-500/80', 'shadow-[0_0_30px_rgba(236,72,153,0.4)]');
+
+            // Sound activation cue (Tone.js requires gesture start here)
+            initMusic();
+
+            holdTimer = setInterval(() => {
+                if (scanProgress < 100) {
+                    scanProgress += 2;
+                    scanPercentageText.innerText = `${scanProgress.toString().padStart(2, '0')}%`;
+                    
+                    // Stagger custom log lines on the status bar
+                    const logIndex = Math.floor((scanProgress / 100) * terminalLogs.length);
+                    if (terminalLogs[logIndex]) {
+                        scanTerminalLog.innerText = terminalLogs[logIndex];
+                        scanTerminalLog.classList.add('text-pink-400');
+                    }
+
+                    // Pulse micro status dots
+                    if (scanProgress % 10 === 0) {
+                        const activeDotId = `dot-${(scanProgress / 10) % 3 + 1}`;
+                        const activeDot = document.getElementById(activeDotId);
+                        if (activeDot) {
+                            activeDot.classList.add('bg-pink-400', 'scale-125');
+                            setTimeout(() => activeDot.classList.remove('bg-pink-400', 'scale-125'), 300);
+                        }
+                    }
+                } else {
+                    // 100% REACHED - SUCCESS!
+                    clearInterval(holdTimer);
+                    isFullyScanned = true;
+                    completeAuthentication();
+                }
+            }, 50);
+        }
+
+        function stopScanning() {
+            if (isFullyScanned) return;
+            clearInterval(holdTimer);
+            scanProgress = 0;
+
+            // Reset visual cues
+            scannerLaser.classList.add('hidden');
+            scanPercentageText.classList.add('hidden');
+            scannerCore.classList.remove('scale-110', 'text-pink-400');
+            scannerPad.classList.remove('border-pink-500/80', 'shadow-[0_0_30px_rgba(236,72,153,0.4)]');
+            scanTerminalLog.innerText = "BIOMETRICS ABORTED. RETRY HOLD.";
+            scanTerminalLog.classList.remove('text-pink-400');
+        }
+
+        function completeAuthentication() {
+            scanTerminalLog.innerText = "SYSTEM ACCESS AUTHORIZED!";
+            scanTerminalLog.classList.add('text-green-400', 'font-extrabold');
+            scannerCore.classList.add('text-green-500', 'scale-125');
+            scanPercentageText.classList.add('text-green-400');
+
+            // Trigger gentle falling neon hearts right away!
+            triggerContinuousFallingHearts();
+
+            // Fade out intro and bring magic stage alive
+            setTimeout(() => {
+                introScreen.classList.add('opacity-0');
+                setTimeout(() => {
+                    introScreen.classList.add('hidden');
+                    mainStage.classList.remove('hidden');
+                    init3DScene();
+                    startSparkles();
+                    playMusic(); // Play synth melody loop!
+                }, 1000);
+            }, 800);
+        }
+
+        // Support mobile touch & desktop click mechanics safely
+        scannerPad.addEventListener('mousedown', startScanning);
+        window.addEventListener('mouseup', stopScanning);
+
+        scannerPad.addEventListener('touchstart', startScanning);
+        window.addEventListener('touchend', stopScanning);
+
+        /* =========================================================================
+           Three.js Scene Engine 
+           ========================================================================= */
+
+        function init3DScene() {
+            const width = canvas3DContainer.clientWidth;
+            const height = canvas3DContainer.clientHeight;
+
+            scene = new THREE.Scene();
+            
+            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera.position.set(0, 3.2, 7.5);
+            
+            cameraTarget = new THREE.Vector3(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = false;
+            canvas3DContainer.appendChild(renderer.domElement);
+
+            giftGroup = new THREE.Group();
+            lidGroup = new THREE.Group();
+            bottomGroup = new THREE.Group();
+            cakeGroup = new THREE.Group();
+
+            const boxMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffa6c9,
+                roughness: 0.15,
+                metalness: 0.5,
+                bumpScale: 0.05
+            });
+
+            const ribbonMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                roughness: 0.1,
+                metalness: 0.9
+            });
+
+            // Lid construction
+            const lidGeom = new THREE.BoxGeometry(2.1, 0.5, 2.1);
+            const lidMesh = new THREE.Mesh(lidGeom, boxMaterial);
+            lidGroup.add(lidMesh);
+
+            const ribbonLidXGeom = new THREE.BoxGeometry(2.12, 0.52, 0.3);
+            const ribbonLidX = new THREE.Mesh(ribbonLidXGeom, ribbonMaterial);
+            lidGroup.add(ribbonLidX);
+
+            const ribbonLidZGeom = new THREE.BoxGeometry(0.3, 0.52, 2.12);
+            const ribbonLidZ = new THREE.Mesh(ribbonLidZGeom, ribbonMaterial);
+            lidGroup.add(ribbonLidZ);
+
+            const bowGroup = new THREE.Group();
+            const bowLoopGeom = new THREE.TorusGeometry(0.3, 0.08, 16, 50);
+            
+            const bowLeft = new THREE.Mesh(bowLoopGeom, ribbonMaterial);
+            bowLeft.position.set(-0.25, 0.4, 0);
+            bowLeft.rotation.y = Math.PI / 4;
+            bowLeft.rotation.z = Math.PI / 4;
+            bowGroup.add(bowLeft);
+
+            const bowRight = new THREE.Mesh(bowLoopGeom, ribbonMaterial);
+            bowRight.position.set(0.25, 0.4, 0);
+            bowRight.rotation.y = -Math.PI / 4;
+            bowRight.rotation.z = -Math.PI / 4;
+            bowGroup.add(bowRight);
+
+            const ribbonStringGeom = new THREE.ConeGeometry(0.12, 0.6, 4);
+            const ribbonStrL = new THREE.Mesh(ribbonStringGeom, ribbonMaterial);
+            ribbonStrL.position.set(-0.3, 0.2, 0.3);
+            ribbonStrL.rotation.z = Math.PI / 3;
+            bowGroup.add(ribbonStrL);
+
+            const ribbonStrR = new THREE.Mesh(ribbonStringGeom, ribbonMaterial);
+            ribbonStrR.position.set(0.3, 0.2, 0.3);
+            ribbonStrR.rotation.z = -Math.PI / 3;
+            bowGroup.add(ribbonStrR);
+
+            bowGroup.position.y = 0.2;
+            lidGroup.add(bowGroup);
+            
+            lidGroup.position.set(0, 1.0, 0);
+            giftGroup.add(lidGroup);
+
+            // Box Bottom
+            const baseGeom = new THREE.BoxGeometry(2, 2, 2);
+            const baseMesh = new THREE.Mesh(baseGeom, boxMaterial);
+            bottomGroup.add(baseMesh);
+
+            const ribbonBaseXGeom = new THREE.BoxGeometry(2.02, 2.02, 0.28);
+            const ribbonBaseX = new THREE.Mesh(ribbonBaseXGeom, ribbonMaterial);
+            bottomGroup.add(ribbonBaseX);
+
+            const ribbonBaseZGeom = new THREE.BoxGeometry(0.28, 2.02, 2.02);
+            const ribbonBaseZ = new THREE.Mesh(ribbonBaseZGeom, ribbonMaterial);
+            bottomGroup.add(ribbonBaseZ);
+
+            bottomGroup.position.set(0, -0.2, 0);
+            giftGroup.add(bottomGroup);
+
+            // Construct 3D Cake inside bottomGroup
+            build3DCake();
+            
+            cakeGroup.position.set(0, -0.5, 0);
+            cakeGroup.scale.set(0.01, 0.01, 0.01);
+            bottomGroup.add(cakeGroup);
+
+            scene.add(giftGroup);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffecc4, 1.4);
+            directionalLight.position.set(5, 8, 5);
+            scene.add(directionalLight);
+
+            const fillLight = new THREE.PointLight(0xffb7b2, 0.8, 12);
+            fillLight.position.set(-4, 2, -2);
+            scene.add(fillLight);
+
+            camera.lookAt(cameraTarget);
+
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            const handleInteract = (clientX, clientY) => {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(giftGroup.children, true);
+
+                if (intersects.length > 0 && !isBoxOpened) {
+                    openGiftSurprise();
+                }
+            }
+
+            canvas3DContainer.addEventListener('mousedown', (e) => {
+                handleInteract(e.clientX, e.clientY);
+            });
+
+            canvas3DContainer.addEventListener('touchstart', (e) => {
+                if(e.touches.length > 0) {
+                    handleInteract(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            });
+
+            animate();
+        }
+
+        function build3DCake() {
+            const baseTierGeom = new THREE.CylinderGeometry(0.7, 0.7, 0.45, 32);
+            const baseTierMat = new THREE.MeshStandardMaterial({
+                color: 0xfff3f8, // Vanilla cream
+                roughness: 0.3,
+                metalness: 0.05
+            });
+            const baseTier = new THREE.Mesh(baseTierGeom, baseTierMat);
+            baseTier.position.y = 0.225;
+            cakeGroup.add(baseTier);
+
+            const dripGeom = new THREE.CylinderGeometry(0.71, 0.71, 0.08, 32);
+            const dripMat = new THREE.MeshStandardMaterial({
+                color: 0xff6b8b, // Strawberry Rose
+                roughness: 0.1,
+                metalness: 0.1
+            });
+            const drip = new THREE.Mesh(dripGeom, dripMat);
+            drip.position.y = 0.42;
+            cakeGroup.add(drip);
+
+            const topTierGeom = new THREE.CylinderGeometry(0.48, 0.48, 0.35, 32);
+            const topTierMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff, // Whipped Cream
+                roughness: 0.2
+            });
+            const topTier = new THREE.Mesh(topTierGeom, topTierMat);
+            topTier.position.y = 0.6;
+            cakeGroup.add(topTier);
+
+            const dollopGeom = new THREE.SphereGeometry(0.045, 8, 8);
+            const dollopMat = new THREE.MeshStandardMaterial({ color: 0xffe3ec, roughness: 0.3 });
+            for (let i = 0; i < 10; i++) {
+                const angle = (i / 10) * Math.PI * 2;
+                const dollop = new THREE.Mesh(dollopGeom, dollopMat);
+                dollop.position.set(Math.cos(angle) * 0.42, 0.78, Math.sin(angle) * 0.42);
+                cakeGroup.add(dollop);
+            }
+
+            const sprinkleGeom = new THREE.BoxGeometry(0.02, 0.06, 0.02);
+            const sprinkleColors = [0xffd700, 0x4fc3f7, 0xba68c8, 0x81c784, 0xff8a65];
+            for (let i = 0; i < 20; i++) {
+                const spColor = sprinkleColors[Math.floor(Math.random() * sprinkleColors.length)];
+                const spMat = new THREE.MeshStandardMaterial({ color: spColor, roughness: 0.2 });
+                const sprinkle = new THREE.Mesh(sprinkleGeom, spMat);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 0.35;
+                sprinkle.position.set(Math.cos(angle) * radius, 0.79, Math.sin(angle) * radius);
+                sprinkle.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+                cakeGroup.add(sprinkle);
+            }
+
+            createCandle(0, 0.78, 0, 0x4fc3f7);
+            createCandle(-0.25, 0.78, 0.15, 0xffd54f);
+            createCandle(0.25, 0.78, -0.15, 0xff8a65);
+        }
+
+        function createCandle(x, y, z, colorHex) {
+            const candleStickGeom = new THREE.CylinderGeometry(0.025, 0.025, 0.22, 8);
+            const candleStickMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.1 });
+            const stick = new THREE.Mesh(candleStickGeom, candleStickMat);
+            stick.position.set(x, y + 0.11, z);
+            cakeGroup.add(stick);
+
+            const wickGeom = new THREE.CylinderGeometry(0.005, 0.005, 0.04, 4);
+            const wickMat = new THREE.MeshBasicMaterial({ color: 0x333333 });
+            const wick = new THREE.Mesh(wickGeom, wickMat);
+            wick.position.set(x, y + 0.24, z);
+            cakeGroup.add(wick);
+
+            const flameGeom = new THREE.ConeGeometry(0.035, 0.12, 8);
+            const flameMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+            const flame = new THREE.Mesh(flameGeom, flameMat);
+            flame.position.set(x, y + 0.31, z);
+            cakeGroup.add(flame);
+            candleFlames.push(flame);
+
+            const flameLight = new THREE.PointLight(0xffa200, 1.2, 5);
+            flameLight.position.set(x, y + 0.35, z);
+            cakeGroup.add(flameLight);
+            candleLights.push(flameLight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (!isBoxOpened) {
+                giftGroup.rotation.y += 0.006;
+                hoverAnimationTime += 0.03;
+                giftGroup.position.y = Math.sin(hoverAnimationTime) * 0.1;
+                camera.lookAt(cameraTarget);
+            } else {
+                bottomGroup.rotation.y += 0.0025;
+                
+                camera.position.lerp(new THREE.Vector3(0, 2.8, 4.5), 0.05);
+                cameraTarget.lerp(new THREE.Vector3(0, 0.4, 0), 0.05);
+                camera.lookAt(cameraTarget);
+                
+                if (cakeGroup.position.y < 1.1) {
+                    cakeGroup.position.y += 0.03;
+                }
+                
+                if (cakeGroup.scale.x < 0.65) {
+                    const currentScale = cakeGroup.scale.x + 0.025;
+                    cakeGroup.scale.set(currentScale, currentScale, currentScale);
+                }
+
+                if (lidGroup.position.y < 6) {
+                    lidGroup.position.y += 0.14;
+                    lidGroup.position.x += 0.06;
+                    lidGroup.rotation.x += 0.04;
+                    lidGroup.rotation.z += 0.03;
+                    
+                    if (lidGroup.scale.x > 0.01) {
+                        lidGroup.scale.subScalar(0.015);
+                    }
+                } else {
+                    lidGroup.visible = false;
+                }
+
+                if (!areCandlesBlown) {
+                    const time = Date.now() * 0.012;
+                    candleFlames.forEach((flame, index) => {
+                        const flicker = Math.sin(time + index * 10) * 0.1 + 0.95;
+                        flame.scale.set(flicker, flicker + Math.cos(time * 0.8) * 0.05, flicker);
+                        flame.position.y = (0.78 + 0.31) + Math.cos(time * 0.5 + index) * 0.005;
+                    });
+
+                    candleLights.forEach((light, index) => {
+                        light.intensity = 1.2 + Math.sin(time * 2 + index) * 0.4;
+                    });
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function openGiftSurprise() {
+            isBoxOpened = true;
+            boxInstruction.classList.add('opacity-0');
+            setTimeout(() => boxInstruction.remove(), 500);
+
+            triggerHeartExplosion();
+            audioControl.classList.remove('hidden');
+
+            stageTitle.classList.add('opacity-0');
+            stageSubtitle.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                stageTitle.innerHTML = "Make a Wish, Beautiful! 🎂✨";
+                stageSubtitle.innerHTML = "ဆုတောင်းတစ်ခုတောင်းပြီး ဖယောင်းတိုင်မီးလေးတွေကို မှုတ်လိုက်ပါဦးနော်။";
+                stageTitle.classList.remove('opacity-0');
+                stageSubtitle.classList.remove('opacity-0');
+                btnBlow.classList.remove('hidden');
+            }, 800);
+        }
+
+        btnBlow.addEventListener('click', () => {
+            if (areCandlesBlown) return;
+            areCandlesBlown = true;
+            
+            candleFlames.forEach(flame => {
+                flame.scale.set(0.001, 0.001, 0.001);
+                flame.visible = false;
+            });
+
+            candleLights.forEach(light => {
+                light.intensity = 0;
+                light.visible = false;
+            });
+
+            if (ambientMusicSynth) {
+                const chime = new Tone.MonoSynth({
+                    oscillator: { type: "triangle" },
+                    envelope: { attack: 0.01, decay: 0.4, sustain: 0.1, release: 0.8 }
+                }).toDestination();
+                chime.volume.value = -4;
+                chime.triggerAttackRelease("C6", "8n");
+            }
+
+            triggerBlowMagicSparkles();
+            
+            // LAUNCH THE COLORFUL BALLOONS!
+            triggerBalloons();
+
+            btnBlow.classList.add('opacity-0');
+            setTimeout(() => {
+                btnBlow.classList.add('hidden');
+                
+                stageTitle.innerHTML = "Happy Birthday, My Queen! 👸🌸";
+                stageSubtitle.innerHTML = "မောင့်ရဲ့ ကမ္ဘာငယ်လေးထဲက အလှပဆုံးသော ပန်းကလေးရေ... အမြဲပျော်ရွှင်ပါစေ။";
+                
+                loveLetterContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    loveLetterContainer.classList.remove('opacity-0', 'translate-y-10');
+                    loveLetterContainer.classList.add('animate-float-letter');
+                    
+                    const paragraphs = document.querySelectorAll('.letter-para');
+                    paragraphs.forEach((p, index) => {
+                        setTimeout(() => {
+                            p.classList.add('show');
+                        }, index * 900);
+                    });
+
+                    onWindowResize();
+                }, 100);
+            }, 500);
+        });
+
+        function onWindowResize() {
+            if (!renderer) return;
+            const width = canvas3DContainer.clientWidth;
+            const height = canvas3DContainer.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        window.addEventListener('resize', onWindowResize);
+
+        /* =========================================================================
+           Visual Effects Particle Engines (Heart Explosion, Balloon Float, Falling Sparks)
+           ========================================================================= */
+
+        function triggerHeartExplosion() {
+            for (let i = 0; i < 45; i++) {
+                setTimeout(() => {
+                    createExplosionHeartParticle();
+                }, i * 110);
+            }
+        }
+
+        function createExplosionHeartParticle() {
+            const heart = document.createElement('div');
+            heart.classList.add('rising-heart');
+            
+            const heartIcons = ['♥', '💖', '🌸', '💝', '✨', '💕'];
+            heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+            
+            heart.style.left = `${15 + Math.random() * 70}vw`;
+            heart.style.fontSize = `${18 + Math.random() * 20}px`;
+            heart.style.color = `hsl(${340 + Math.random() * 30}, 100%, ${65 + Math.random() * 15}%)`;
+            
+            const duration = 5 + Math.random() * 4;
+            heart.style.animationDuration = `${duration}s`;
+            
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
+        }
+
+        // Lightweight Pure-JS Falling Neon Hearts Engine
+        function triggerContinuousFallingHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('falling-heart');
+                
+                const heartIcons = ['💖', '♥', '🌸', '💕', '✨'];
+                heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.fontSize = `${10 + Math.random() * 16}px`;
+                // Generates brilliant shades of neon hot pink, soft purple, and romantic coral
+                heart.style.color = `hsl(${320 + Math.random() * 45}, 100%, ${65 + Math.random() * 15}%)`;
+                heart.style.filter = "drop-shadow(0 0 5px currentColor)";
+                
+                const duration = 8 + Math.random() * 6; // 8 to 14 seconds fallback
+                heart.style.animationDuration = `${duration}s`;
+                
+                document.body.appendChild(heart);
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }, 550); // Continuously loops and generates a cozy ambiance
+        }
+
+        // Spawn colorful balloons
+        function triggerBalloons() {
+            const colors = [
+                '#ff5e7e', // Rose Pink
+                '#ffd23f', // Golden Yellow
+                '#3b82f6', // Ocean Blue
+                '#10b981', // Emerald Mint
+                '#8b5cf6', // Sweet Lavender
+                '#f97316', // Orange Tang
+                '#ec4899'  // Fuchsia Princess
+            ];
+
+            // Spawn 30 gorgeous balloons sequentially
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const bColor = colors[Math.floor(Math.random() * colors.length)];
+                    createBalloon(bColor);
+                }, i * 150);
+            }
+        }
+
+        function createBalloon(color) {
+            const container = document.createElement('div');
+            container.classList.add('balloon');
+            
+            // Build Balloon Structure with Body, Knot and String
+            const body = document.createElement('div');
+            body.classList.add('balloon-body');
+            body.style.backgroundColor = color;
+            body.style.color = color;
+            
+            const knot = document.createElement('div');
+            knot.classList.add('balloon-knot');
+            
+            const string = document.createElement('div');
+            string.classList.add('balloon-string');
+            
+            body.appendChild(knot);
+            body.appendChild(string);
+            container.appendChild(body);
+            
+            // Randomize position and animation parameters
+            container.style.left = `${5 + Math.random() * 90}vw`;
+            
+            // Randomize speed/durations
+            const animDuration = 6 + Math.random() * 4; // 6 to 10 seconds
+            container.style.animationDuration = `${animDuration}s`;
+            
+            // Add a slight size difference
+            const scale = 0.8 + Math.random() * 0.5;
+            container.style.transform = `scale(${scale})`;
+            
+            document.body.appendChild(container);
+            
+            // Auto clean up balloon node after floating off-screen
+            setTimeout(() => {
+                container.remove();
+            }, animDuration * 1000);
+        }
+
+        function triggerBlowMagicSparkles() {
+            for (let i = 0; i < 35; i++) {
+                const sparkle = document.createElement('i');
+                sparkle.className = "fa-solid fa-sparkles absolute text-amber-300 pointer-events-none z-50 animate-ping";
+                sparkle.style.left = `${45 + Math.random() * 10}vw`;
+                sparkle.style.top = `${40 + Math.random() * 15}vh`;
+                sparkle.style.fontSize = `${Math.random() * 20 + 10}px`;
+                sparkle.style.color = Math.random() > 0.5 ? '#fffdf0' : '#ffd700';
+                
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1200);
+            }
+        }
+
+        function startSparkles() {
+            setInterval(() => {
+                const sparkle = document.createElement('i');
+                sparkle.className = "fa-solid fa-star absolute text-amber-200/40 pointer-events-none";
+                sparkle.style.left = `${Math.random() * 100}vw`;
+                sparkle.style.top = `${Math.random() * 100}vh`;
+                sparkle.style.fontSize = `${Math.random() * 6 + 3}px`;
+                sparkle.style.transform = `scale(${Math.random() * 1.2})`;
+                sparkle.style.transition = "all 2s ease";
+                
+                const container = document.getElementById('sparkle-container');
+                if (container) {
+                    container.appendChild(sparkle);
+                    setTimeout(() => {
+                        sparkle.style.opacity = '0';
+                        setTimeout(() => sparkle.remove(), 2000);
+                    }, 500);
+                }
+            }, 400);
+        }
+
+        /* =========================================================================
+           STUDIO EDITOR INTERFACE PROTOCOL (Dynamic live update binding handlers)
+           ========================================================================= */
+
+        let lastDataRef = {};
+
         function applyUpdate(data) {
             if (!data) return;
-            if (data.bday_name) document.getElementById('bday-name').innerText = data.bday_name;
-            if (data.bday_message) document.getElementById('bday-message').innerText = data.bday_message;
-            if (data.bday_image) document.getElementById('bday-image').src = data.bday_image;
-            if (data.bday_wish) document.getElementById('bday-wish').innerText = data.bday_wish;
-            if (data.bday_emoji) document.getElementById('selected-emoji').innerText = data.bday_emoji;
-            if (data.bg_color) document.body.style.backgroundColor = data.bg_color;
-            if (data.bg_track) {
-                const audio = document.getElementById('bgMusic');
-                if (audio.src !== data.bg_track) {
-                    audio.src = data.bg_track;
-                    audio.load();
+            lastDataRef = Object.assign({}, lastDataRef, data);
+
+            if (data.intro_title !== undefined) {
+                const introTitleEl = document.querySelector('#intro-screen h1');
+                if (introTitleEl) introTitleEl.innerText = data.intro_title;
+            }
+            if (data.stage_title !== undefined) {
+                const stageTitleEl = document.getElementById('stage-title');
+                if (stageTitleEl) stageTitleEl.innerText = data.stage_title;
+            }
+            if (data.bday_title !== undefined) {
+                const letterHeaderEl = document.getElementById('letter-header');
+                if (letterHeaderEl) {
+                    letterHeaderEl.innerHTML = `${data.bday_title} <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-lg md:text-xl animate-pulse"></i>`;
+                }
+            }
+            if (data.bday_para1 !== undefined || data.bday_para2 !== undefined || data.bday_para3 !== undefined || data.bday_sender !== undefined) {
+                const p1 = lastDataRef.bday_para1 !== undefined ? lastDataRef.bday_para1 : "ဒီနေ့လို ထူးခြားလှပတဲ့ မွေးနေ့ရက်မြတ်လေးမှာ မောင် ချစ်ရတဲ့သူလေး တစ်သက်လုံး စိတ်ချမ်းသာ၊ ကိုယ်ကျန်းမာနဲ့ အလိုချင်ဆုံး ဆုတောင်းတွေအားလုံး ပြည့်ဝပါစေလို့ မောင် ဆုတောင်းပေးပါတယ်ဗျာ။ ✨";
+                const p2 = lastDataRef.bday_para2 !== undefined ? lastDataRef.bday_para2 : "မောင့်ရဲ့ဘဝထဲကို ရောက်လာပေးပြီး နေ့ရက်တိုင်းကို အဓိပ္ပာယ်ရှိလှပအောင် အဖော်မွန်ပြုပေးခဲ့တဲ့အတွက်လည်း ကျေးဇူးအများကြီး တင်ပါတယ် ချစ်လေး။";
+                const p3 = lastDataRef.bday_para3 !== undefined ? lastDataRef.bday_para3 : "နောင်နှစ်ပေါင်းများစွာတိုင်အောင် မောင်တို့နှစ်ယောက် တစ်ယောက်လက်ကိုတစ်ယောက် မြဲမြဲဆုပ်ကိုင်ထားပြီး မင်းလေးအနားမှာ အမြဲတမ်းကာကွယ်ပေးမယ့် အားကိုးရသူတစ်ယောက်အဖြစ် ရှိနေပေးပါမယ်နော်။ 🥂💕";
+                const sender = lastDataRef.bday_sender !== undefined ? lastDataRef.bday_sender : "မောင်";
+
+                const bodyDiv = document.getElementById('letter-body');
+                if (bodyDiv) {
+                    bodyDiv.innerHTML = `
+                        <p class="letter-para show" style="opacity: 1; transform: translateY(0);">${p1}</p>
+                        <p class="letter-para show" style="opacity: 1; transform: translateY(0);">${p2}</p>
+                        <p class="letter-para show" style="opacity: 1; transform: translateY(0);">${p3}</p>
+                        <p class="letter-para show text-right text-amber-400 font-bold mt-2 md:mt-4 romantic-font text-xl md:text-2xl" style="opacity: 1; transform: translateY(0);">
+                            မင်းကို အမြဲတမ်းချစ်နေမယ့်... <br>
+                            ${sender}
+                        </p>
+                    `;
                 }
             }
         }
 
         window.addEventListener('message', e => {
-            if (e.data.type === 'UPDATE_DATA') applyUpdate(e.data.payload);
-            if (e.data.type === 'REQUEST_SNAPSHOT') window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+            if (e.data.type === 'UPDATE_DATA') {
+                applyUpdate(e.data.payload);
+            }
+            if (e.data.type === 'REQUEST_SNAPSHOT') {
+                window.parent.postMessage({ type: 'HTML_SNAPSHOT', html: document.documentElement.outerHTML }, '*');
+            }
         });
 
-        // Initialize Confetti
-        for (let i = 0; i < 20; i++) {
-            const c = document.createElement('div');
-            c.className = 'confetti animate__animated animate__fadeOutDown animate__infinite';
-            c.style.position = 'absolute';
-            c.style.left = Math.random() * 100 + 'vw';
-            c.style.top = Math.random() * 100 + 'vh';
-            c.style.width = '8px';
-            c.style.height = '8px';
-            c.style.opacity = '0.6';
-            c.style.pointerEvents = 'none';
-            c.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            c.style.backgroundColor = ['#f43f5e', '#fbbf24', '#3b82f6', '#10b981'][Math.floor(Math.random() * 4)];
-            document.body.appendChild(c);
-        }
-
+        // Load existing state if accessing standard unique saved card link
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('id')) {
-            fetch(`/api/card/${urlParams.get('id')}`).then(r => r.json()).then(d => applyUpdate(d));
+            fetch(`/api/card/${urlParams.get('id')}`)
+                .then(r => r.json())
+                .then(d => applyUpdate(d))
+                .catch(err => console.error("Error loading saved card:", err));
         }
+
+        // Register configuration schema parameters to parent Customize Studio
         window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: SCHEMA }, '*');
     </script>
+    <script src="/surprise-extra.js"></script>
 </body>
 </html>

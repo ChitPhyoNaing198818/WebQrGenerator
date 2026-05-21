@@ -12,6 +12,7 @@
         .font-oswald { font-family: 'Oswald', sans-serif; }
         .clip-slant { clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); }
     </style>
+    <script src="/audio-helper.js"></script>
 </head>
 <body class="min-h-screen">
     <audio id="bgMusic" loop></audio>
@@ -81,5 +82,6 @@
         }
         window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: SCHEMA }, '*');
     </script>
+    <script src="/surprise-extra.js"></script>
 </body>
 </html>

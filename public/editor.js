@@ -1,5 +1,6 @@
 let setupCompleted = false;
 let stateDataStorage = {};
+let templateStates = {};
 let activeSelectedFile = "";
 let qrCodeInstance = null;
 let pendingFiles = {};
@@ -584,19 +585,30 @@ function switchTemplateFile(fileName, cardId) {
     const headerBar = document.getElementById('previewHeaderBar');
     const viewport = document.getElementById('previewViewport');
     const floatingBtn = document.getElementById('floatingOpenTabBtn');
-    if (container) container.className = "w-full border-0 bg-transparent shadow-none flex flex-col h-[560px] sm:h-[620px] lg:h-[660px] relative transition-all duration-500";
+    if (container) container.className = "w-full border-0 bg-transparent shadow-none flex flex-col h-[560px] sm:h-[620px] lg:h-[82vh] lg:min-h-[620px] lg:max-h-[840px] relative transition-all duration-500";
     if (headerBar) headerBar.className = "hidden";
     if (viewport) viewport.className = "flex-1 bg-transparent p-3 sm:p-4 lg:p-6 flex items-center justify-center overflow-hidden relative min-h-0 transition-all duration-500";
     if (floatingBtn) floatingBtn.classList.remove('opacity-0', 'pointer-events-none');
     
+    // Preserve current template state before loading a new one
+    if (activeSelectedFile && Object.keys(stateDataStorage).length > 0) {
+        templateStates[activeSelectedFile] = { ...stateDataStorage };
+    }
+
     activeSelectedFile = fileName; document.getElementById('previewIframe').src = fileName;
-    stateDataStorage = {}; pendingFiles = {};
+    
+    // Load preserved template state or start fresh
+    stateDataStorage = templateStates[fileName] ? { ...templateStates[fileName] } : {};
+    pendingFiles = {};
+
+    // Switch mobile dock to Live Preview mode immediately
+    setMobileTab('preview');
 
     const buttons = document.querySelectorAll('.mobile-tab-btn, .template-card');
     buttons.forEach(btn => {
         btn.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-600', 'text-white', 'border-indigo-500', 'scale-[1.015]', 'scale-[1.02]');
         if (btn.classList.contains('mobile-tab-btn')) {
-            btn.className = "mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm";
+            btn.className = "mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-[12px] font-bold transition-all active:scale-95 flex items-center space-x-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm";
             const ii = btn.querySelector('.icon-wrap'); if (ii) { const oc = ii.getAttribute('data-original-class'); if (oc) ii.className = oc; }
         } else if (btn.classList.contains('template-card')) {
             btn.classList.remove('border-indigo-500', 'dark:border-indigo-400', 'border-2', 'shadow-md');
@@ -622,7 +634,7 @@ function switchTemplateFile(fileName, cardId) {
         else if (cardId === 'btn-mother') mobileBg = "bg-pink-500 border-pink-500 shadow-pink-400/20";
         else if (cardId === 'btn-father') mobileBg = "bg-blue-600 border-blue-600 shadow-blue-500/20";
         else if (cardId === 'btn-friend') mobileBg = "bg-sky-600 border-sky-600 shadow-sky-500/20";
-        mobileBtn.className = `mobile-tab-btn whitespace-nowrap px-3.5 py-2 rounded-xl ${textColor} text-[12px] font-extrabold transition-all active:scale-95 flex items-center space-x-2 border shadow-md ${mobileBg}`;
+        mobileBtn.className = `mobile-tab-btn shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl ${textColor} text-[12px] font-extrabold transition-all active:scale-[1.015] flex items-center space-x-2 border shadow-md ${mobileBg}`;
         const ii = mobileBtn.querySelector('.icon-wrap');
         if (ii) { const ib = (cardId === 'btn-birthday') ? 'bg-slate-950/15 text-slate-950' : 'bg-white/20 text-white'; ii.className = `icon-wrap inline-flex items-center justify-center w-5 h-5 rounded-md ${ib} text-[10px]`; }
     }
@@ -680,7 +692,8 @@ const locales = {
         welcomeHeader: "ဒီဇိုင်းပြင်ဆင်ရေး စတူဒီယို", welcomeDesc: "ဘယ်ဘက်ရှိ ဒီဇိုင်းတစ်ခုခုကို ရွေးချယ်ပြီး လှပသပ်ရပ်စွာ ကိုယ်ပိုင်အချက်အလက်များ ပြောင်းလဲဖန်တီးလိုက်ပါ။",
         labels: {
             "title": "စာအိတ်တွင်း ခေါင်းစဉ်", "message": "ရင်ဖွင့်လွှာ စာသားများ", "sealText": "တံဆိပ်ခတ်နှိပ်စာသား", "hints": "စာအိတ်အောက် ညွှန်ကြားစာ", "colorBg": "နောက်ခံ Background အရောင်", "colorText": "စာသား စာလုံးအရောင်", "colorEnvelope": "စာအိတ် ကိုယ်ထည်အရောင်", "colorFlap": "စာအိတ် အဖုံးအရောင်", "waxIcon": "တံဆိပ်တုံး Icon (Emoji)", "sideEmoji": "ဘေးဘက် အလှဆင် (Emoji)", "bgMusic": "နောက်ခံ တေးဂီတ", "bday_name": "ဂုဏ်ပြုခံရသူ အမည်", "bday_message": "အထူးဆုတောင်းစကား", "bday_image": "ပရိုဖိုင်ဓာတ်ပုံ", "bday_wish": "အောက်ခြေဆုတောင်းချက်", "bday_emoji": "ဂုဏ်ပြုသင်္ကေတ (Emoji)", "bg_color": "နောက်ခံအရောင်", "bg_track": "နောက်ခံတေးသီချင်း", "anniv_title": "နှစ်ပတ်လည် ခေါင်းစဉ်", "anniv_years": "နှစ်ပတ်လည် နှစ်အရေအတွက်", "anniv_desc": "အမှတ်တရစာလွှာ", "anniv_main_img": "ပင်မဓာတ်ပုံ", "anniv_music": "နောက်ခံတေးဂီတ", "cv_title": "မေးခွန်း ခေါင်းစဉ်", "cv_sub": "ရှင်းပြချက် စာသား", "cv_yes": "လက်ခံသည် ကတ်ခလုတ်", "cv_no": "ငြင်းပယ်သည် ကတ်ခလုတ်", "cv_music": "နောက်ခံတေးသီချင်း", "blog_title": "ဘလော့ခ် ခေါင်းစဉ်", "blog_body": "စာသား အချက်အလက်", "blog_banner": "မျက်နှာဖုံးပုံ",
-            "queenName": "ချစ်သူ/မွေးနေ့ရှင် အမည်", "christmasWish": "Christmas ဆုတောင်းစကား", "photo1": "ဓာတ်ပုံ အမိုက်စား (၁)", "photo2": "ဓာတ်ပုံ အမိုက်စား (၂)", "photo3": "ဓာတ်ပုံ အမိုက်စား (၃)", "bgMusicTrack": "နောက်ခံသီချင်း (.mp3)"
+            "queenName": "ချစ်သူ/မွေးနေ့ရှင် အမည်", "christmasWish": "Christmas ဆုတောင်းစကား", "photo1": "ဓာတ်ပုံ အမိုက်စား (၁)", "photo2": "ဓာတ်ပုံ အမိုက်စား (၂)", "photo3": "ဓာတ်ပုံ အမိုက်စား (၃)", "bgMusicTrack": "နောက်ခံသီချင်း (.mp3)",
+            "ar_enabled": "3D Model / AR မြင်ကွင်း ထည့်သွင်းမည်", "ar_model_glb": "3D Model (.glb) ဖိုင် သို့မဟုတ် လင့်ခ်ရွေးချယ်ရန်", "lock_datetime": "ဖွင့်မည့်အချိန် Countdown ပိတ်သိပ်ချက်သတ်မှတ်ရန်", "lock_message": "ပိတ်ထားစဉ်ပြသမည့် စာသားရေးရန်"
         }
     },
     en: {
@@ -693,7 +706,8 @@ const locales = {
         welcomeHeader: "Design Studio Awaits!", welcomeDesc: "Choose a premade layout template from the directory to unlock fine-grain visual and text editing controls.",
         labels: {
             "title": "Envelope Title", "message": "Message Body", "sealText": "Wax Seal Label", "hints": "Under Helper Hint", "colorBg": "Background Color", "colorText": "Text Color", "colorEnvelope": "Envelope Base Color", "colorFlap": "Envelope Flap Color", "waxIcon": "Wax Seal Icon", "sideEmoji": "Side Embellishment", "bgMusic": "Background Music", "bday_name": "Celebrant Name", "bday_message": "Birthday Message", "bday_image": "Celebrant Photo", "bday_wish": "Bottom Wish Note", "bday_emoji": "Celebration Emoji", "bg_color": "Background Fill", "bg_track": "Music Soundtrack", "anniv_title": "Anniversary Title", "anniv_years": "Years Count", "anniv_desc": "Anniversary Letter", "anniv_main_img": "Memory Backdrop", "anniv_music": "Waltz Soundtrack", "cv_title": "Propose Title", "cv_sub": "Love Description", "cv_yes": "Yes Label Button", "cv_no": "No Label Button", "cv_music": "Atmosphere Track", "blog_title": "Surprise Blog Banner", "blog_body": "Diary Prose", "blog_banner": "Intro Image",
-            "queenName": "Recipient Name", "christmasWish": "Christmas Message", "photo1": "Lovely Photo (1)", "photo2": "Lovely Photo (2)", "photo3": "Lovely Photo (3)", "bgMusicTrack": "Background Track (.mp3)"
+            "queenName": "Recipient Name", "christmasWish": "Christmas Message", "photo1": "Lovely Photo (1)", "photo2": "Lovely Photo (2)", "photo3": "Lovely Photo (3)", "bgMusicTrack": "Background Track (.mp3)",
+            "ar_enabled": "Enable 3D Model in AR", "ar_model_glb": "Choose or Upload 3D Model (.glb)", "lock_datetime": "Surprise Release Countdown Lock Date & Time", "lock_message": "Message While Locked"
         }
     }
 };
@@ -861,17 +875,17 @@ function buildDynamicStudioForm(schema) {
     
     for (let catId in groups) {
         const grp = groups[catId]; if (grp.elements.length === 0) continue;
-        const groupCard = document.createElement('div'); groupCard.className = "border border-slate-100 dark:border-slate-850 rounded-xl bg-slate-50/50 dark:bg-slate-900/30 overflow-hidden font-sans";
+        const groupCard = document.createElement('div'); groupCard.className = "border border-slate-200/60 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/30 overflow-hidden font-sans shadow-sm";
         const grpHeader = document.createElement('button'); grpHeader.type = "button";
-        grpHeader.className = "w-full px-3 py-2.5 flex items-center justify-between text-left font-bold text-xs bg-slate-100/50 dark:bg-slate-800/20 text-slate-700 dark:text-slate-300 hover:bg-slate-100 border-b border-slate-100 dark:border-slate-800 transition-all select-none font-sans";
+        grpHeader.className = "w-full px-3.5 py-3 flex items-center justify-between text-left font-bold text-xs bg-slate-100/50 dark:bg-slate-800/20 text-slate-700 dark:text-slate-300 hover:bg-slate-100/80 border-b border-slate-200/60 dark:border-slate-800 transition-all select-none font-sans";
         grpHeader.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid ${grp.icon}"></i><span>${grp.title}</span></div><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-arrow transition-transform"></i>`;
         
-        const grpBody = document.createElement('div'); grpBody.className = "p-3 space-y-3.5 transition-all duration-300";
+        const grpBody = document.createElement('div'); grpBody.className = "p-4 sm:p-5 mt-2 space-y-4 sm:space-y-5 transition-all duration-300";
         grp.elements.forEach(field => {
-            const wrapper = document.createElement('div'); wrapper.className = "space-y-1 font-sans";
+            const wrapper = document.createElement('div'); wrapper.className = "space-y-2 mb-4 font-sans";
             const labelText = l.labels[field.id] || field.label;
             wrapper.innerHTML = `<label class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider font-sans">${labelText}</label>`;
-            let input; const baseClass = "w-full p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-slate-200 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-[10px] font-sans";
+            let input; const baseClass = "w-full p-2.5 sm:p-3 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-slate-200 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-[10px] font-sans";
             
             if (field.type === 'image' || field.type === 'audio' || field.type === 'file') {
                 const inputGroup = document.createElement('div'); inputGroup.className = "space-y-2";
@@ -881,16 +895,19 @@ function buildDynamicStudioForm(schema) {
                 let activeText = currentLang === 'my' ? 'ဖိုင်ရွေးရန် နှိပ်ပါ သို့မဟုတ် ဆွဲထည့်ပါ' : 'Click or drag file here to upload';
                 let isBlob = false;
                 if (currentVal && currentVal.startsWith('blob:')) { activeText = `✓ File Loaded`; isBlob = true; }
-                dropZone.innerHTML = `<div class="w-7 h-7 rounded-lg bg-indigo-50/10 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform"><i class="fa-solid ${field.type === 'audio' ? 'fa-music' : 'fa-image'} text-[11px]"></i></div><span class="text-[10px] font-semibold text-slate-700 dark:text-slate-300 pointer-events-none drop-label ${isBlob ? 'text-emerald-600 dark:text-emerald-400 font-bold' : ''} font-sans">${activeText}</span><span class="text-[8px] text-slate-400 dark:text-slate-500 uppercase tracking-widest pointer-events-none font-sans">${field.type === 'audio' ? 'Max 5MB • Audio' : 'Max 2MB • Image'}</span>`;
                 
-                const hiddenFileInput = document.createElement('input'); hiddenFileInput.type = 'file'; hiddenFileInput.className = "hidden"; hiddenFileInput.accept = field.type === 'audio' ? "audio/*" : "image/*";
+                const customIcon = field.type === 'audio' ? 'fa-music' : (field.type === 'file' ? 'fa-cube' : 'fa-image');
+                const infoText = field.type === 'audio' ? 'Max 5MB • Audio' : (field.type === 'file' ? 'Max 10MB • 3D Model (.glb)' : 'Max 2MB • Image');
+                dropZone.innerHTML = `<div class="w-7 h-7 rounded-lg bg-indigo-50/10 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform"><i class="fa-solid ${customIcon} text-[11px]"></i></div><span class="text-[10px] font-semibold text-slate-700 dark:text-slate-300 pointer-events-none drop-label ${isBlob ? 'text-emerald-600 dark:text-emerald-400 font-bold' : ''} font-sans">${activeText}</span><span class="text-[8px] text-slate-400 dark:text-slate-500 uppercase tracking-widest pointer-events-none font-sans">${infoText}</span>`;
+                
+                const hiddenFileInput = document.createElement('input'); hiddenFileInput.type = 'file'; hiddenFileInput.className = "hidden"; hiddenFileInput.accept = field.type === 'audio' ? "audio/*" : (field.type === 'file' ? ".glb" : "image/*");
                 dropZone.addEventListener('click', () => hiddenFileInput.click());
                 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-500/5'); });
                 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/5'));
                 
                 const handleFileSelection = async (file) => {
                     if (file) {
-                        const MAX_SIZE = field.type === 'audio' ? 5 : 2;
+                        const MAX_SIZE = field.type === 'audio' ? 5 : (field.type === 'file' ? 10 : 2);
                         if (file.size > MAX_SIZE * 1024 * 1024) { alert(currentLang === 'my' ? `ဖိုင်အရွယ်အစား ကြီးမားနေပါသည်။ အများဆုံး ${MAX_SIZE}MB သာ ခွင့်ပြုပါသည်။` : `File too large. Max size is ${MAX_SIZE}MB.`); return; }
                         const dl = dropZone.querySelector('.drop-label'); dl.innerText = `✓ ${file.name.slice(0, 15)}...`;
                         dl.className = "text-[10px] font-bold text-emerald-600 dark:text-emerald-400 pointer-events-none drop-label animate-pulse font-sans";
@@ -901,7 +918,8 @@ function buildDynamicStudioForm(schema) {
                 dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/5'); handleFileSelection(e.dataTransfer.files[0]); });
                 hiddenFileInput.addEventListener('change', (e) => handleFileSelection(e.target.files[0]));
                 
-                const urlInput = document.createElement('input'); urlInput.type = 'text'; urlInput.placeholder = currentLang === 'my' ? "သို့မဟုတ် တိုက်ရိုက် လင့်ခ် (URL) ထည့်ပါ..." : "Or paste direct URL link here...";
+                const linkPlaceholder = field.type === 'file' ? (currentLang === 'my' ? "သို့မဟုတ် GLB 3D Model လင့်ခ်ထည့်ပါ..." : "Or paste GLB 3D Model link here...") : (field.type === 'audio' ? (currentLang === 'my' ? "သို့မဟုတ် MP3 Link သို့ဟုတ် YouTube / YT Music လင့်ခ်ထည့်ပါ..." : "Or paste MP3 Link, YouTube or YT Music URL here...") : (currentLang === 'my' ? "သို့မဟုတ် ပုံရိပ် လင့်ခ်ထည့်ပါ..." : "Or paste image link here..."));
+                const urlInput = document.createElement('input'); urlInput.type = 'text'; urlInput.placeholder = linkPlaceholder;
                 urlInput.className = baseClass; urlInput.value = stateDataStorage[field.id] && !stateDataStorage[field.id].startsWith('blob:') ? stateDataStorage[field.id] : '';
                 urlInput.addEventListener('input', e => {
                     if (e.target.value.trim() !== '') {
@@ -1027,7 +1045,19 @@ window.enterStudio = enterStudio;
 
 window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'REGISTER_MANIFEST') {
-        activeSchema = event.data.schema; buildDynamicStudioForm(event.data.schema);
+        const extraFields = [
+            { id: "ar_enabled", label: "Enable 3D Model in AR", type: "select", options: [{ value: "no", label: "Disable 3D Model" }, { value: "yes", label: "Enable 3D Model & AR" }], defaultValue: "no" },
+            { id: "ar_model_glb", label: "Select or Upload 3D Model (.glb)", type: "file", defaultValue: "https://modelviewer.dev/shared-assets/models/Cake.glb" },
+            { id: "lock_datetime", label: "Surprise Release Countdown Lock Date & Time", type: "datetime-local", defaultValue: "" },
+            { id: "lock_message", label: "Message While Locked", type: "text", defaultValue: "This surprise is locked until the countdown reaches zero! 🤫🎁" }
+        ];
+        let originalSchema = event.data.schema || [];
+        extraFields.forEach(ef => {
+            if (!originalSchema.some(orig => orig.id === ef.id)) {
+                originalSchema.push(ef);
+            }
+        });
+        activeSchema = originalSchema; buildDynamicStudioForm(originalSchema);
     } else if (event.data && event.data.type === 'START_STUDIO') {
         enterStudio();
     } else if (event.data && event.data.type === 'SELECT_TEMPLATE') {
