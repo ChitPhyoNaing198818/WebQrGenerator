@@ -17,6 +17,7 @@
 </head>
 <body class="min-h-screen p-8 flex flex-col items-center">
     <audio id="bgMusic" loop></audio>
+    <button id="music-btn" onclick="toggleMusic(event)" style="display: none;" class="fixed top-6 right-6 z-50 bg-white/80 border border-slate-200 p-3 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all text-sm">🎵</button>
     
     <div class="max-w-md w-full space-y-12">
         <header class="text-center space-y-2 animate__animated animate__fadeInDown">
@@ -49,8 +50,20 @@
             { id: "caption_1", label: "Image Caption", type: "text", defaultValue: "Memory #001: The best day ever." },
             { id: "friend_msg", label: "Special Message", type: "textarea", defaultValue: "“A good friend knows all your stories, but a best friend helped you write them.”" },
             { id: "friend_sign", label: "Signature", type: "text", defaultValue: "BFF 4 Lyfe" },
-            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "" }
         ];
+
+        function toggleMusic(e) {
+            if (e) e.stopPropagation();
+            const audio = document.getElementById('bgMusic');
+            if (audio.paused) {
+                audio.play().catch(()=>{});
+                document.getElementById('music-btn').innerText = '⏸';
+            } else {
+                audio.pause();
+                document.getElementById('music-btn').innerText = '🎵';
+            }
+        }
 
         function applyUpdate(data) {
             if (!data) return;
@@ -65,7 +78,21 @@
                 if (audio.src !== data.bg_track) {
                     audio.src = data.bg_track;
                     audio.load();
+                    audio.play().then(() => {
+                        document.getElementById('music-btn').innerText = '⏸';
+                        document.getElementById('music-btn').style.display = 'block';
+                    }).catch(()=>{
+                        document.getElementById('music-btn').innerText = '🎵';
+                        document.getElementById('music-btn').style.display = 'block';
+                    });
+                } else {
+                    document.getElementById('music-btn').style.display = 'block';
                 }
+            } else if (data.bg_track === "") {
+                const audio = document.getElementById('bgMusic');
+                audio.src = "";
+                document.getElementById('music-btn').style.display = 'none';
+                audio.pause();
             }
         }
 

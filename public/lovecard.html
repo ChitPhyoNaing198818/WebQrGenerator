@@ -85,9 +85,9 @@
     </div>
     <div id="hints">You have a sweet message waiting inside</div>
   </div>
-  <button class="audio-btn" id="audioBtn" onclick="toggleAudio(event)">🎵</button>
+  <button class="audio-btn" id="audioBtn" style="display: none;" onclick="toggleAudio(event)">🎵</button>
   <audio id="bg-music" loop>
-    <source id="music-src" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    <source id="music-src" src="" type="audio/mpeg">
   </audio>
   <script>
     const studioManifest = [
@@ -101,7 +101,7 @@
       { id: 'colorFlap', label: 'စာအိတ် အဖုံးအရောင်', type: 'color', defaultValue: '#ff758f' },
       { id: 'waxIcon', label: 'တံဆိပ်တုံး Icon (Emoji)', type: 'select', defaultValue: '❤', options: ['❤', '💌', '🌹', '🦋', '💍', '🐧', '🐼'] },
       { id: 'sideEmoji', label: 'ဘေးဘက် အလှဆင် (Emoji)', type: 'select', defaultValue: '🌸', options: ['🌸', '💖', '✨', '🌹', '🦋', '⭐', '🎈', '🍀', '🍎'] },
-      { id: 'bgMusic', label: 'နောက်ခံ တေးဂီတ (Music Upload/URL)', type: 'audio', defaultValue: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }
+      { id: 'bgMusic', label: 'နောက်ခံ တေးဂီတ (Music Upload/URL)', type: 'audio', defaultValue: '' }
     ];
 
     let dynamicState = {};
@@ -138,15 +138,21 @@
       if (dynamicState.waxIcon) root.style.setProperty('--wax-icon', `"${dynamicState.waxIcon}"`);
       if (dynamicState.sideEmoji) root.style.setProperty('--side-emoji', `"${dynamicState.sideEmoji}"`);
       if(dynamicState.bgMusic) {
+        document.getElementById('audioBtn').style.display = 'flex';
         const audio = document.getElementById('bg-music');
         const src = document.getElementById('music-src');
-        if(src.src !== dynamicState.bgMusic) {
+        if(src && src.src !== dynamicState.bgMusic) {
           src.src = dynamicState.bgMusic;
           audio.load();
           if(isMusicPlaying) {
              audio.play().catch(err => console.log("Audio play blocked:", err));
           }
         }
+      } else {
+        document.getElementById('audioBtn').style.display = 'none';
+        const audio = document.getElementById('bg-music');
+        if (audio) audio.pause();
+        isMusicPlaying = false;
       }
     }
 
@@ -212,6 +218,7 @@
     }
 
     function startAudio() {
+      if (!dynamicState.bgMusic) return;
       const audio = document.getElementById('bg-music');
       audio.play().then(() => {
         isMusicPlaying = true;

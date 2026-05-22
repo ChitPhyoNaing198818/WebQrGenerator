@@ -33,7 +33,7 @@ if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && proce
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
+const PORT = parseInt(process.env.PORT || "3000", 10);
 const DB_DIR = path.join(process.cwd(), "data");
 const DB_FILE = path.join(DB_DIR, "db.json");
 const UPLOADS_DIR = path.join(process.cwd(), "uploads");
@@ -198,110 +198,111 @@ const upload = multer({
   },
 });
 
-async function startServer() {
-  // Connect to MongoDB if MONGO_URI is set, fail over gracefully to local storage
-  await connectToMongo();
+// Connect to MongoDB if MONGO_URI is set, fail over gracefully to local storage
+connectToMongo();
 
-  const app = express();
+const app = express();
 
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-  app.use("/uploads", express.static(UPLOADS_DIR));
+app.use("/uploads", express.static(UPLOADS_DIR));
 
-  // DB & Media Connection Status Endpoint
-  app.get("/api/db-status", (req, res) => {
-    return res.json({
-      connected: mongoConnected,
-      databaseType: mongoConnected ? "MongoDB" : "Local JSON",
-      envConfigured: !!process.env.MONGO_URI,
-      cloudinaryConfigured: cloudinaryConfigured,
-      cloudinaryEnvConfigured: !!(process.env.CLOUDINARY_CLOUD_NAME)
-    });
+// DB & Media Connection Status Endpoint
+app.get("/api/db-status", (req, res) => {
+  return res.json({
+    connected: mongoConnected,
+    databaseType: mongoConnected ? "MongoDB" : "Local JSON",
+    envConfigured: !!process.env.MONGO_URI,
+    cloudinaryConfigured: cloudinaryConfigured,
+    cloudinaryEnvConfigured: !!(process.env.CLOUDINARY_CLOUD_NAME)
   });
+});
 
-  app.get("/api/card/:id", async (req, res) => {
-    const { id } = req.params;
-    try {
-      const card = await getCardById(id);
-      if (card) {
-        return res.json(card);
-      }
-      return res.status(404).json({ success: false, message: "Card not found" });
-    } catch (err: any) {
-      console.error("Error loading card:", err);
-      return res.status(500).json({ success: false, message: err.message || "Failed to load card config" });
+app.get("/api/card/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const card = await getCardById(id);
+    if (card) {
+      return res.json(card);
     }
-  });
+    return res.status(404).json({ success: false, message: "Card not found" });
+  } catch (err: any) {
+    console.error("Error loading card:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to load card config" });
+  }
+});
 
-  app.post("/api/generate-card", upload.any(), async (req, res) => {
-    try {
-      const payloadString = req.body.payload;
-      if (!payloadString) {
-        return res.status(400).json({ success: false, message: "Missing design parameters payload" });
-      }
+app.post("/api/generate-card", upload.any(), async (req, res) => {
+  try {
+    const payloadString = req.body.payload;
+    if (!payloadString) {
+      return res.status(400).json({ success: false, message: "Missing design parameters payload" });
+    }
 
-      const parsedPayload = JSON.parse(payloadString);
-      const cardId = Math.random().toString(36).substring(2, 10);
+    const parsedPayload = JSON.parse(payloadString);
+    const cardId = Math.random().toString(36).substring(2, 10);
 
-      const templateName = parsedPayload.templateName || "lovecard";
-      const cardData: Record<string, any> = {
-        ...parsedPayload,
-      };
+    const templateName = parsedPayload.templateName || "lovecard";
+    const cardData: Record<string, any> = {
+      ...parsedPayload,
+    };
 
-      if (req.files && Array.isArray(req.files)) {
-        for (const file of req.files) {
-          if (cloudinaryConfigured) {
-            const cloudUrl = await uploadToCloudinary(file.path);
-            if (cloudUrl) {
-              cardData[file.fieldname] = cloudUrl;
-            } else {
-              cardData[file.fieldname] = `/uploads/${file.filename}`;
-            }
+    if (req.files && Array.isArray(req.files)) {
+      for (const file of req.files) {
+        if (cloudinaryConfigured) {
+          const cloudUrl = await uploadToCloudinary(file.path);
+          if (cloudUrl) {
+            cardData[file.fieldname] = cloudUrl;
           } else {
             cardData[file.fieldname] = `/uploads/${file.filename}`;
           }
+        } else {
+          cardData[file.fieldname] = `/uploads/${file.filename}`;
         }
       }
-
-      await saveCard(cardId, templateName, cardData);
-
-      return res.json({ success: true, id: cardId });
-    } catch (err: any) {
-      console.error("Error generating card:", err);
-      return res.status(500).json({ success: false, message: err.message || "Failed to generate card config" });
     }
-  });
 
-  app.get("/view/:id", async (req, res) => {
-    const { id } = req.params;
-    try {
-      const card = await getCardById(id);
-      if (card) {
-        const tpl = card.templateName || "lovecard";
-        return res.redirect(`/${tpl}.html?id=${id}`);
-      }
-    } catch (err) {
-      console.error("Error loading view page:", err);
+    await saveCard(cardId, templateName, cardData);
+
+    return res.json({ success: true, id: cardId });
+  } catch (err: any) {
+    console.error("Error generating card:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to generate card config" });
+  }
+});
+
+app.get("/view/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const card = await getCardById(id);
+    if (card) {
+      const tpl = card.templateName || "lovecard";
+      return res.redirect(`/${tpl}.html?id=${id}`);
     }
-    return res.status(404).send(`
-      <html>
-        <head>
-          <title>Not Found</title>
-          <style>
-            body { font-family: system-ui, sans-serif; text-align: center; padding: 50px; background: #fafafa; color: #333; }
-            h1 { color: #dc2626; }
-          </style>
-        </head>
-        <body>
-          <h1>Card not found</h1>
-          <p>The card ID you are looking for does not exist or has expired.</p>
-          <a href="/">Go to Studio</a>
-        </body>
-      </html>
-    `);
-  });
+  } catch (err) {
+    console.error("Error loading view page:", err);
+  }
+  return res.status(404).send(`
+    <html>
+      <head>
+        <title>Not Found</title>
+        <style>
+          body { font-family: system-ui, sans-serif; text-align: center; padding: 50px; background: #fafafa; color: #333; }
+          h1 { color: #dc2626; }
+        </style>
+      </head>
+      <body>
+        <h1>Card not found</h1>
+        <p>The card ID you are looking for does not exist or has expired.</p>
+        <a href="/">Go to Studio</a>
+      </body>
+    </html>
+  `);
+});
 
+// Helper configuration function for mounting Vite middleware in dev environment without top-level awaits
+async function initializeViteMiddleware() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -315,10 +316,13 @@ async function startServer() {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
-
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
 }
 
-startServer();
+// Trigger asynchronous Vite middleware registration
+initializeViteMiddleware();
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
+export default app;

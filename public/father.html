@@ -16,6 +16,7 @@
 </head>
 <body class="min-h-screen">
     <audio id="bgMusic" loop></audio>
+    <button id="music-btn" onclick="toggleMusic(event)" style="display: none;" class="fixed top-6 right-6 z-50 bg-white/80 border border-slate-200 p-3 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all text-sm">🎵</button>
     
     <div class="relative w-full h-[45vh] bg-slate-900 clip-slant overflow-hidden shadow-2xl">
         <img id="dad-img" src="https://images.unsplash.com/photo-1544144433-d50aff500b91?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover opacity-60">
@@ -52,8 +53,20 @@
             { id: "dad_sub", label: "Personal Message", type: "textarea", defaultValue: "I’m so proud to call you my father. Thank you for teaching me strength and kindness." },
             { id: "dad_img", label: "Dad's Best Photo", type: "image", defaultValue: "https://images.unsplash.com/photo-1544144433-d50aff500b91?auto=format&fit=crop&q=80&w=1200" },
             { id: "dad_signature", label: "Signature", type: "text", defaultValue: "— WITH LOVE, [YOUR NAME]" },
-            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "" }
         ];
+
+        function toggleMusic(e) {
+            if (e) e.stopPropagation();
+            const audio = document.getElementById('bgMusic');
+            if (audio.paused) {
+                audio.play().catch(()=>{});
+                document.getElementById('music-btn').innerText = '⏸';
+            } else {
+                audio.pause();
+                document.getElementById('music-btn').innerText = '🎵';
+            }
+        }
 
         function applyUpdate(data) {
             if (!data) return;
@@ -67,7 +80,21 @@
                 if (audio.src !== data.bg_track) {
                     audio.src = data.bg_track;
                     audio.load();
+                    audio.play().then(() => {
+                        document.getElementById('music-btn').innerText = '⏸';
+                        document.getElementById('music-btn').style.display = 'block';
+                    }).catch(()=>{
+                        document.getElementById('music-btn').innerText = '🎵';
+                        document.getElementById('music-btn').style.display = 'block';
+                    });
+                } else {
+                    document.getElementById('music-btn').style.display = 'block';
                 }
+            } else if (data.bg_track === "") {
+                const audio = document.getElementById('bgMusic');
+                audio.src = "";
+                document.getElementById('music-btn').style.display = 'none';
+                audio.pause();
             }
         }
 

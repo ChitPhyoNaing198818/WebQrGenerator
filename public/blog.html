@@ -74,7 +74,8 @@
             </div>
         </div>
     </div>
-    <audio id="music" loop><source id="music-src" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+    <audio id="music" loop><source id="music-src" src=""></audio>
+    <button id="music-btn" onclick="toggleMusic(event)" style="display: none;" class="fixed top-6 right-6 z-50 bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 p-3 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all text-sm">🎵</button>
     <script>
         const templateManifest = {
             type: 'REGISTER_MANIFEST',
@@ -90,12 +91,26 @@
                 { id: 'img1', type: 'image', label: 'ဓာတ်ပုံ ၁', icon: 'fa-solid fa-image', defaultValue: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400" },
                 { id: 'img2', type: 'image', label: 'ဓာတ်ပုံ ၁', icon: 'fa-solid fa-image', defaultValue: "https://images.unsplash.com/photo-1512916193091-c58b7e24d5d2?w=400" },
                 { id: 'img3', type: 'image', label: 'ဓာတ်ပုံ ၁', icon: 'fa-solid fa-image', defaultValue: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400" },
-                { id: 'bgMusic', type: 'audio', label: 'နောက်ခံ တေးဂီတ (Music Upload/URL)', icon: 'fa-solid fa-music', defaultValue: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }
+                { id: 'bgMusic', type: 'audio', label: 'နောက်ခံ တေးဂီတ (Music Upload/URL)', icon: 'fa-solid fa-music', defaultValue: '' }
             ]
         };
         window.parent.postMessage(templateManifest, '*');
         let textToType = templateManifest.schema.find(s => s.id === 'letterText').defaultValue;
         let successResponseText = templateManifest.schema.find(s => s.id === 'successText').defaultValue;
+        let isStarted = false;
+
+        function toggleMusic(e) {
+            if (e) e.stopPropagation();
+            const audioEl = document.getElementById('music');
+            if (audioEl.paused) {
+                audioEl.play().catch(()=>{});
+                document.getElementById('music-btn').innerText = '⏸';
+            } else {
+                audioEl.pause();
+                document.getElementById('music-btn').innerText = '🎵';
+            }
+        }
+
         function applyStateUpdate(data) {
             if (data.overlayText) document.getElementById('overlay').innerText = data.overlayText;
             if (data.nameTag) document.getElementById('name').innerText = data.nameTag;
@@ -110,10 +125,20 @@
             if (data.img3) document.getElementById('img_3_el').src = data.img3;
             if (data.bgMusic) {
                 const audio = document.getElementById('music');
-                if (audio.src !== data.bgMusic) {
-                    audio.src = data.bgMusic;
+                const src = document.getElementById('music-src');
+                if (src && src.src !== data.bgMusic) {
+                    src.src = data.bgMusic;
                     audio.load();
                 }
+                if (isStarted) {
+                    document.getElementById('music-btn').style.display = 'block';
+                }
+            } else if (data.bgMusic === "") {
+                const audio = document.getElementById('music');
+                const src = document.getElementById('music-src');
+                if (src) src.src = "";
+                document.getElementById('music-btn').style.display = 'none';
+                audio.pause();
             }
         }
         window.addEventListener('message', function(event) {
@@ -138,9 +163,18 @@
           } catch(e) { console.error("Payload decoding failed", e); }
         }
         function start() {
+            isStarted = true;
             document.getElementById('overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('overlay').style.display = 'none', 1500);
-            try { document.getElementById('music').play(); } catch(e) {}
+            
+            const audioEl = document.getElementById('music');
+            const src = document.getElementById('music-src');
+            if (src && src.src && !src.src.endsWith('.html') && !src.src.endsWith('/') && src.src !== window.location.href) {
+                audioEl.play().then(() => {
+                    document.getElementById('music-btn').innerText = '⏸';
+                    document.getElementById('music-btn').style.display = 'block';
+                }).catch(() => {});
+            }
             setTimeout(() => document.getElementById('c1').classList.add('visible'), 800);
             setTimeout(() => document.getElementById('c2').classList.add('visible'), 1800);
             setTimeout(() => document.getElementById('c3').classList.add('visible'), 2800);

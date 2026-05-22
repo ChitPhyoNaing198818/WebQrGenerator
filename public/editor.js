@@ -585,10 +585,12 @@ function switchTemplateFile(fileName, cardId) {
     const headerBar = document.getElementById('previewHeaderBar');
     const viewport = document.getElementById('previewViewport');
     const floatingBtn = document.getElementById('floatingOpenTabBtn');
+    const floatingReplayBtn = document.getElementById('floatingReplayBtn');
     if (container) container.className = "w-full border-0 bg-transparent shadow-none flex flex-col h-[560px] sm:h-[620px] lg:h-[82vh] lg:min-h-[620px] lg:max-h-[840px] relative transition-all duration-500";
     if (headerBar) headerBar.className = "hidden";
     if (viewport) viewport.className = "flex-1 bg-transparent p-3 sm:p-4 lg:p-6 flex items-center justify-center overflow-hidden relative min-h-0 transition-all duration-500";
     if (floatingBtn) floatingBtn.classList.remove('opacity-0', 'pointer-events-none');
+    if (floatingReplayBtn) floatingReplayBtn.classList.remove('opacity-0', 'pointer-events-none');
     
     // Preserve current template state before loading a new one
     if (activeSelectedFile && Object.keys(stateDataStorage).length > 0) {
@@ -785,6 +787,16 @@ function openIframeInNewTab() {
     else alert(currentLang === 'my' ? "ဖွင့်ရန် အစမ်းကြည့်ရှုမှုစနစ် (Layout) တစ်ခုခုအား ဦးစွာ ရွေးချယ်ပေးပါရန် လိုအပ်ပါသည်။" : "Please select and activate a layout design template first.");
 }
 
+function replayIframeAnimation() {
+    const iframe = document.getElementById('previewIframe');
+    if (iframe && activeSelectedFile) {
+        // Reload current page
+        iframe.src = activeSelectedFile;
+    } else {
+        alert(currentLang === 'my' ? "အစမ်းကြည့်ရှုရန် Layout ရွေးချယ်ပေးပါ" : "Please select a layout to preview first.");
+    }
+}
+
 function switchStudioTab(tabId) {
     activeStudioTab = tabId;
     const cTab = document.getElementById('tabBtn-content'); const mTab = document.getElementById('tabBtn-magic');
@@ -863,6 +875,11 @@ function buildDynamicStudioForm(schema) {
     };
     
     schema.forEach(field => {
+        if (field.id === 'lock_datetime' || field.id === 'lock_message') {
+            if (activeSelectedFile !== 'anniversary.html' && activeSelectedFile !== 'birthday.html') {
+                return;
+            }
+        }
         const id = field.id.toLowerCase(); const label = field.label.toLowerCase(); let cat = 'texts';
         if (field.type === 'color' || id.includes('bg') || id.includes('color') || id.includes('music') || id.includes('track') || label.includes('color') || label.includes('music')) {
             cat = 'colors';
@@ -1046,8 +1063,6 @@ window.enterStudio = enterStudio;
 window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'REGISTER_MANIFEST') {
         const extraFields = [
-            { id: "ar_enabled", label: "Enable 3D Model in AR", type: "select", options: [{ value: "no", label: "Disable 3D Model" }, { value: "yes", label: "Enable 3D Model & AR" }], defaultValue: "no" },
-            { id: "ar_model_glb", label: "Select or Upload 3D Model (.glb)", type: "file", defaultValue: "https://modelviewer.dev/shared-assets/models/Cake.glb" },
             { id: "lock_datetime", label: "Surprise Release Countdown Lock Date & Time", type: "datetime-local", defaultValue: "" },
             { id: "lock_message", label: "Message While Locked", type: "text", defaultValue: "This surprise is locked until the countdown reaches zero! 🤫🎁" }
         ];
@@ -1066,49 +1081,4 @@ window.addEventListener('message', function(event) {
         syncResponsiveLayout();
     }
 });
-
-async function checkDatabaseStatus() {
-    try {
-        const res = await fetch('/api/db-status');
-        const data = await res.json();
-        
-        // MongoDB Badge
-        const dbBadge = document.getElementById('db-connection-badge');
-        if (dbBadge) {
-            if (data.connected) {
-                dbBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> MongoDB Live`;
-                dbBadge.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8.5px] font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 select-none animate-pulse";
-            } else {
-                if (data.envConfigured) {
-                    dbBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Mongo Issue`;
-                    dbBadge.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8.5px] font-black bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 select-none";
-                } else {
-                    dbBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Local fallback JSON`;
-                    dbBadge.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8.5px] font-black bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 select-none";
-                }
-            }
-        }
-
-        // Cloudinary Badge
-        const cldBadge = document.getElementById('cloudinary-connection-badge');
-        if (cldBadge) {
-            if (data.cloudinaryConfigured) {
-                cldBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Cloudinary Cloud`;
-                cldBadge.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8.5px] font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 select-none animate-pulse";
-            } else {
-                if (data.cloudinaryEnvConfigured) {
-                    cldBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Cloudinary Connect Issue`;
-                    cldBadge.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8.5px] font-black bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 select-none";
-                } else {
-                    cldBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Local folder uploads`;
-                    cldBadge.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8.5px] font-black bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 select-none";
-                }
-            }
-        }
-    } catch (e) {
-        console.error("Failed to check database and media status", e);
-    }
-}
-setTimeout(checkDatabaseStatus, 1000);
-setInterval(checkDatabaseStatus, 15000);
 

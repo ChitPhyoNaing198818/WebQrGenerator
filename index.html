@@ -492,6 +492,9 @@
                         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500" id="live-preview-title">Live Preview</span>
                     </div>
                     <div class="flex items-center space-x-2">
+                        <button onclick="replayIframeAnimation()" title="Replay animation" aria-label="Replay animation" class="w-7 h-7 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 border border-slate-200/50 dark:border-slate-700/50 rounded-lg select-none active:scale-95 transition-all">
+                            <i class="fa-solid fa-rotate-left text-[9px]"></i>
+                        </button>
                         <button onclick="openIframeInNewTab()" title="Open preview in new tab" aria-label="Open in new window" class="w-7 h-7 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 border border-slate-200/50 dark:border-slate-700/50 rounded-lg select-none active:scale-95 transition-all">
                             <i class="fa-solid fa-up-right-from-square text-[9px]"></i>
                         </button>
@@ -499,9 +502,14 @@
                 </div>
                 
                 <div id="previewViewport" class="flex-1 bg-transparent p-3 sm:p-4 lg:p-6 flex items-center justify-center overflow-hidden relative min-h-0 transition-all duration-500">
-                    <button id="floatingOpenTabBtn" onclick="openIframeInNewTab()" title="Open preview in new tab" aria-label="Open in new window" class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-slate-900/95 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 border border-slate-200/60 dark:border-slate-800/60 rounded-full shadow-md backdrop-blur-md select-none active:scale-95 transition-all opacity-0 pointer-events-none">
-                        <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
-                    </button>
+                    <div class="absolute top-4 right-4 z-20 flex gap-2">
+                        <button id="floatingReplayBtn" onclick="replayIframeAnimation()" title="Replay animation" aria-label="Replay animation" class="w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-slate-900/95 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 border border-slate-200/60 dark:border-slate-800/60 rounded-full shadow-md backdrop-blur-md select-none active:scale-95 transition-all opacity-0 pointer-events-none">
+                            <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                        </button>
+                        <button id="floatingOpenTabBtn" onclick="openIframeInNewTab()" title="Open preview in new tab" aria-label="Open in new window" class="w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-slate-900/95 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 border border-slate-200/60 dark:border-slate-800/60 rounded-full shadow-md backdrop-blur-md select-none active:scale-95 transition-all opacity-0 pointer-events-none">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
+                        </button>
+                    </div>
                     <div class="preview-mobile tutorial-mode transition-all duration-300 ease-out" id="iphoneFrame">
                         <iframe id="previewIframe" src="example.html"></iframe>
                     </div>
@@ -529,14 +537,6 @@
                         <span id="customizeStudioTitle" class="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
                             <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Customize Studio
                         </span>
-                        <div class="flex items-center gap-1.5">
-                            <div id="db-connection-badge" class="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-slate-100 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 text-slate-400 select-none">
-                                <span class="w-1 h-1 rounded-full bg-slate-400"></span> Checking DB...
-                            </div>
-                            <div id="cloudinary-connection-badge" class="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-slate-100 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 text-slate-400 select-none">
-                                <span class="w-1 h-1 rounded-full bg-slate-400"></span> Checking Media...
-                            </div>
-                        </div>
                     </div>
 
                     <div class="shrink-0 p-1 px-1.5 bg-slate-100/60 dark:bg-slate-950/40 rounded-2xl flex gap-1.5 mx-4 my-3.5 border border-slate-200/20 dark:border-slate-800/40 backdrop-blur-md">

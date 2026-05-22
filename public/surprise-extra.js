@@ -3,15 +3,6 @@
  * Handles Surprise Release Countdown Lock and Google's interactive 3D AR Model Viewer.
  */
 (function() {
-    // 1. Dynamic Dependency Injection
-    if (!document.getElementById('model-viewer-script')) {
-        const script = document.createElement('script');
-        script.id = 'model-viewer-script';
-        script.type = 'module';
-        script.src = 'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
-        document.head.appendChild(script);
-    }
-
     if (!document.getElementById('font-awesome-cdn')) {
         const link = document.createElement('link');
         link.id = 'font-awesome-cdn';
@@ -61,9 +52,6 @@
 
         // A. Handle Surprise Locked Release Timer
         handleCountdownLock(data);
-
-        // B. Handle AR 3D Model Rendering
-        handleARModelViewer(data);
     }
 
     function handleCountdownLock(data) {
@@ -202,110 +190,6 @@
                 document.documentElement.style.overflow = '';
                 document.body.style.overflow = '';
             }
-        }
-    }
-
-    function handleARModelViewer(data) {
-        const isArEnabled = data.ar_enabled === 'yes';
-        const glbUrl = data.ar_model_glb || 'https://modelviewer.dev/shared-assets/models/Cake.glb';
-
-        let arBtn = document.getElementById('floating-ar-toggle');
-        let arModal = document.getElementById('ar-viewer-modal');
-
-        if (!isArEnabled) {
-            if (arBtn) arBtn.remove();
-            if (arModal) arModal.remove();
-            return;
-        }
-
-        // A. Expandable floating widget triggers
-        if (!arBtn) {
-            arBtn = document.createElement('button');
-            arBtn.id = 'floating-ar-toggle';
-            arBtn.className = 'fixed bottom-4 left-4 z-[9999] w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,0.4)] transition-all hover:scale-110 active:scale-95 animate-pulse cursor-pointer';
-            arBtn.innerHTML = '<i class="fa-solid fa-cube text-xl"></i>';
-
-            arBtn.addEventListener('click', () => {
-                const modal = document.getElementById('ar-viewer-modal');
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    setTimeout(() => {
-                        modal.classList.remove('opacity-0');
-                        modal.querySelector('.modal-container').classList.remove('scale-95');
-                    }, 10);
-                }
-            });
-            document.body.appendChild(arBtn);
-        }
-
-        // B. Absolute fullscreen 3D view modal popup
-        if (!arModal) {
-            arModal = document.createElement('div');
-            arModal.id = 'ar-viewer-modal';
-            arModal.className = 'fixed inset-0 z-[99999] hidden items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-all duration-300 opacity-0';
-            arModal.innerHTML = `
-                <div class="modal-container w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative transition-transform duration-300 scale-95 flex flex-col h-[480px]">
-                    <!-- Modal Header -->
-                    <div class="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-950/45">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-cubes text-indigo-400"></i>
-                            <span class="text-xs font-black uppercase tracking-wider text-slate-200 font-sans">Interactive 3D AR Viewer</span>
-                        </div>
-                        <button class="close-ar-modal w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-705 text-slate-400 flex items-center justify-center text-xs transition-colors cursor-pointer">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- model-viewer body canvas -->
-                    <div class="flex-1 bg-slate-950 relative flex items-center justify-center min-h-0">
-                        <model-viewer
-                            id="ar-mv-element"
-                            src="${glbUrl}"
-                            ar
-                            ar-modes="webxr scene-viewer quick-look"
-                            camera-controls
-                            touch-action="pan-y"
-                            shadow-intensity="1"
-                            auto-rotate
-                            class="w-full h-full"
-                            style="--poster-color: transparent;">
-                            <button slot="ar-button" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-full shadow-[0_4px_15px_rgba(99,102,241,0.3)] flex items-center gap-2 text-xs transition-all pointer-events-auto hover:scale-105 active:scale-95 cursor-pointer">
-                                <i class="fa-solid fa-expand"></i> View in AR Mode
-                            </button>
-                        </model-viewer>
-                    </div>
-                    
-                    <!-- help info footer -->
-                    <div class="p-3 text-center bg-slate-950/40 border-t border-slate-800 select-none">
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest font-sans">Drag to rotate • Pinch to zoom</p>
-                    </div>
-                </div>
-            `;
-
-            arModal.querySelector('.close-ar-modal').addEventListener('click', closeArModal);
-            arModal.addEventListener('click', (e) => {
-                if (e.target === arModal) closeArModal();
-            });
-
-            document.body.appendChild(arModal);
-        } else {
-            const mv = arModal.querySelector('model-viewer');
-            if (mv && mv.getAttribute('src') !== glbUrl) {
-                mv.setAttribute('src', glbUrl);
-            }
-        }
-    }
-
-    function closeArModal() {
-        const modal = document.getElementById('ar-viewer-modal');
-        if (modal) {
-            modal.classList.add('opacity-0');
-            modal.querySelector('.modal-container').classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
         }
     }
 })();

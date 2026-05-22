@@ -106,13 +106,17 @@
         function pressDelete() { currentInput = currentInput.slice(0, -1); updateDisplay(); }
         function clearAll() { currentInput = ""; updateDisplay(); }
         function updateDisplay() { document.getElementById('password-display').innerText = currentInput || ""; }
-        function checkPassword() {
+         function checkPassword() {
             if (currentInput === CORRECT_PASSWORD) {
                 document.getElementById('lock-screen').style.opacity = '0';
                 setTimeout(() => document.getElementById('lock-screen').style.display = 'none', 1000);
                 document.getElementById('main-story').classList.remove('hidden');
-                document.getElementById('music-btn').classList.remove('hidden');
-                bgMusic.play().catch(()=>{});
+                if (bgMusic && bgMusic.src && bgMusic.src !== "" && !bgMusic.src.endsWith('/') && !bgMusic.src.endsWith('.html') && bgMusic.src !== window.location.href) {
+                    document.getElementById('music-btn').classList.remove('hidden');
+                    bgMusic.play().catch(()=>{});
+                } else {
+                    document.getElementById('music-btn').classList.add('hidden');
+                }
                 initHeartEngine();
                 animateCounter(0, 1095, 3000);
                 startScrollObserver();
@@ -167,7 +171,7 @@
             { id: "story_3_title", label: "Chapter 3 Title", type: "text", defaultValue: "တစ်သက်တာလုံးအတွက် ခရီးစဉ်တစ်ခု" },
             { id: "story_3_desc", label: "Chapter 3 Description", type: "textarea", defaultValue: "မင်းဟာ ကိုယ့်ရဲ့ နွေးထွေးတဲ့ အိမ်ကလေးဖြစ်သလို အချစ်ဆုံးသူငယ်ချင်းလည်း ဖြစ်ပါတယ်။" },
             { id: "story_3_img", label: "Chapter 3 Image", type: "image", defaultValue: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600" },
-            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+            { id: "bg_track", label: "Background Music", type: "audio", defaultValue: "" }
         ];
         function register() { window.parent.postMessage({ type: 'REGISTER_MANIFEST', schema: SCHEMA }, '*'); }
         setTimeout(register, 300);
@@ -200,6 +204,14 @@
                     bgMusic.src = data.bg_track;
                     bgMusic.load();
                 }
+                const isUnlocked = document.getElementById('lock-screen').style.display === 'none';
+                if (isUnlocked) {
+                    document.getElementById('music-btn').classList.remove('hidden');
+                }
+            } else if (data.bg_track === "") {
+                bgMusic.src = "";
+                document.getElementById('music-btn').classList.add('hidden');
+                bgMusic.pause();
             }
         }
         window.addEventListener('message', e => {
