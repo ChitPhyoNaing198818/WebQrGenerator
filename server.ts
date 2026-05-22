@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import multer from "multer";
 import dotenv from "dotenv";
@@ -29,9 +28,6 @@ if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && proce
   console.log("Falling back entirely to local folder uploads.");
   console.log("------------------------------------------------------------");
 }
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const PORT = parseInt(process.env.PORT || "3000", 10);
 const DB_DIR = path.join(process.cwd(), "data");
